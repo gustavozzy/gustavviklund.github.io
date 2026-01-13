@@ -25,7 +25,8 @@
             background-color: rgb(0, 0, 0);
             margin: 0;
             padding: 0;
-            min-height: 100vh;
+            height: 100vh;
+            overflow: hidden;
             cursor: none; /* Match city page cursor */
             font-family: 'Avenir', 'Avenir Next', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
         }
@@ -107,11 +108,12 @@
         }
         
         .project-page {
-            min-height: 100vh;
+            height: 100vh;
             padding: 40px 60px;
             box-sizing: border-box;
             display: flex;
             flex-direction: column;
+            overflow: hidden;
         }
 
         .project-layout {
@@ -120,6 +122,7 @@
             gap: 60px;
             align-items: stretch;
             margin-top: 20px;
+            min-height: 0;
         }
 
         .project-text {
@@ -190,22 +193,35 @@
             flex-direction: column;
             gap: 24px;
             overflow-y: auto;
+            overflow-x: hidden;
+            min-height: 0;
         }
         
         .image-main {
-            flex: 0 0 58%;
-            background-color: white;
+            width: 100%;
+        }
+        
+        .image-main img {
+            width: 100%;
+            height: auto;
+            display: block;
+            cursor: none;
         }
         
         .image-row {
-            flex: 1;
             display: flex;
             gap: 24px;
         }
         
         .image-small {
             flex: 1;
-            background-color: white;
+        }
+        
+        .image-small img {
+            width: 100%;
+            height: auto;
+            display: block;
+            cursor: none;
         }
 
         /* Animation styles */
@@ -301,11 +317,6 @@
             display: block;
         }
 
-        .image-main img,
-        .image-small img {
-            cursor: none;
-        }
-
     </style>
 </head>
 <body>
@@ -333,10 +344,16 @@
             </section>
 
             <section class="project-images">
-                <div class="image-main"></div>
+                <div class="image-main">
+                    <img src="resources/clubclassics1.png" alt="CLUB CLASSICS project image 1">
+                </div>
                 <div class="image-row">
-                    <div class="image-small"></div>
-                    <div class="image-small"></div>
+                    <div class="image-small">
+                        <img src="resources/clubclassics2.png" alt="CLUB CLASSICS project image 2">
+                    </div>
+                    <div class="image-small">
+                        <img src="resources/clubclassics3.png" alt="CLUB CLASSICS project image 3">
+                    </div>
                 </div>
             </section>
         </div>
