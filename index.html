@@ -67,6 +67,50 @@
             height: 10vh !important;
         }
         
+        /* Loading indicator */
+        .loading-indicator {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            z-index: 2001;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            opacity: 1;
+            transition: opacity 0.5s ease;
+            pointer-events: none;
+        }
+        
+        .loading-indicator.hidden {
+            opacity: 0;
+            pointer-events: none;
+        }
+        
+        .loading-spinner {
+            width: 40px;
+            height: 40px;
+            border: 3px solid rgba(255, 255, 255, 0.3);
+            border-top: 3px solid rgb(255, 255, 255);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        .loading-text {
+            margin-top: 20px;
+            color: rgb(255, 255, 255);
+            font-family: 'Avenir', 'Avenir Next', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            font-size: 14px;
+            font-weight: 500;
+            letter-spacing: 1px;
+        }
+        
         /* Custom cursor: outer follows position, inner handles scale transition */
         .custom-cursor {
             position: fixed;
@@ -234,25 +278,25 @@
             top: 35%; /* Adjust this value to change the line position (0% = top, 100% = bottom) */
         }
 
-        #house-line-1 {
+        #house-line-lotta {
             top: 12%;
         }
 
-        #house-line-4 {
+        #house-line-club {
             top: 43%;
         }
 
-        #house-line-2 {
+        #house-line-myart {
             top: 25%;
         }
 
-        #building1 { 
+        #lotta-building { 
             left: 1150px; 
             z-index: 10;
             transform-origin: bottom center;
             transform: scale(1);
         }
-        #building2 { 
+        #myart-building { 
             left: 1600px; 
             z-index: 3;
             transform-origin: bottom center;
@@ -264,7 +308,7 @@
             transform-origin: bottom center;
             transform: scale(1);
         }
-        #building4 { 
+        #club-building { 
             left: 800px; 
             z-index: 1;
             transform-origin: bottom center;
@@ -394,15 +438,15 @@
             }
 
             // Move buildings at different speeds
-            const building1 = document.getElementById('building1');
-            const building2 = document.getElementById('building2');
+            const lottaBuilding = document.getElementById('lotta-building');
+            const myartBuilding = document.getElementById('myart-building');
             const anniBuilding = document.getElementById('anni-building');
-            const building4 = document.getElementById('building4');
+            const clubBuilding = document.getElementById('club-building');
             
-            if (building1) building1.style.transform = `translateX(${scrolled * -0.3}px)`;
-            if (building2) building2.style.transform = `translateX(${scrolled * 0}px)`;
+            if (lottaBuilding) lottaBuilding.style.transform = `translateX(${scrolled * -0.3}px)`;
+            if (myartBuilding) myartBuilding.style.transform = `translateX(${scrolled * 0}px)`;
             if (anniBuilding) anniBuilding.style.transform = `translateX(${scrolled * 0.1}px)`;
-            if (building4) building4.style.transform = `translateX(${scrolled * 0.2}px)`;
+            if (clubBuilding) clubBuilding.style.transform = `translateX(${scrolled * 0.2}px)`;
             
             // Parallax effect for skyline (moves slower than scroll for depth effect)
             const skyline = document.querySelector('.skyline');
@@ -585,6 +629,12 @@
         // Function to initialize ground animation
         function initializeGroundAnimation() {
             const ground = document.querySelector('.ground');
+            const loadingIndicator = document.querySelector('.loading-indicator');
+            
+            // Show loading indicator
+            if (loadingIndicator) {
+                loadingIndicator.classList.remove('hidden');
+            }
             
             if (ground) {
                 // Reset the ground to loading state
@@ -657,6 +707,12 @@
             function hideLoadingScreen() {
                 isLoadingComplete = true;
                 
+                // Hide loading indicator
+                const loadingIndicator = document.querySelector('.loading-indicator');
+                if (loadingIndicator) {
+                    loadingIndicator.classList.add('hidden');
+                }
+                
                 // Remove loading class from ground to trigger reverse animation
                 const ground = document.querySelector('.ground');
                 if (ground) {
@@ -691,16 +747,16 @@
                         
                         // Update building positions and car based on scroll
                         const scrolled = document.body.scrollLeft;
-                        const building1 = document.getElementById('building1');
-                        const building2 = document.getElementById('building2');
+                        const lottaBuilding = document.getElementById('lotta-building');
+                        const myartBuilding = document.getElementById('myart-building');
                         const anniBuilding = document.getElementById('anni-building');
-                        const building4 = document.getElementById('building4');
+                        const clubBuilding = document.getElementById('club-building');
                         const car = document.getElementById('car');
                         
-                        if (building1) building1.style.transform = `translateX(${scrolled * -0.3}px)`;
-                        if (building2) building2.style.transform = `translateX(${scrolled * 0}px)`;
+                        if (lottaBuilding) lottaBuilding.style.transform = `translateX(${scrolled * -0.3}px)`;
+                        if (myartBuilding) myartBuilding.style.transform = `translateX(${scrolled * 0}px)`;
                         if (anniBuilding) anniBuilding.style.transform = `translateX(${scrolled * 0.1}px)`;
-                        if (building4) building4.style.transform = `translateX(${scrolled * 0.2}px)`;
+                        if (clubBuilding) clubBuilding.style.transform = `translateX(${scrolled * 0.2}px)`;
                         
                         // Update skyline parallax
                         const skyline = document.querySelector('.skyline');
@@ -761,21 +817,21 @@
         // Setup house click handlers after images are loaded
         window.addEventListener('load', function() {
             // Click handlers for house images (only bottom portions will be clickable due to blockers)
-            const house1 = document.querySelector('#building1 .house');
-            const house2 = document.querySelector('#building2 .house');
+            const lottaHouse = document.querySelector('#lotta-building .house');
+            const myartHouse = document.querySelector('#myart-building .house');
             const anniHouse = document.querySelector('#anni-building .house');
-            const house4 = document.querySelector('#building4 .house');
+            const clubHouse = document.querySelector('#club-building .house');
             
-            if (house1) {
-                house1.addEventListener('click', function(e) {
+            if (lottaHouse) {
+                lottaHouse.addEventListener('click', function(e) {
                     e.stopPropagation();
                     e.preventDefault();
                     navigateWithTransition('project3.html');
                 });
             }
             
-            if (house2) {
-                house2.addEventListener('click', function(e) {
+            if (myartHouse) {
+                myartHouse.addEventListener('click', function(e) {
                     e.stopPropagation();
                     e.preventDefault();
                     navigateWithTransition('project2.html');
@@ -790,8 +846,8 @@
                 });
             }
             
-            if (house4) {
-                house4.addEventListener('click', function(e) {
+            if (clubHouse) {
+                clubHouse.addEventListener('click', function(e) {
                     e.stopPropagation();
                     e.preventDefault();
                     navigateWithTransition('project4.html');
@@ -823,9 +879,9 @@
             // Map building IDs to project names
             const projectNames = {
                 'anni-building': 'ANNI SUSHI',
-                'building1': 'LOTTA HASSELBLAD',
-                'building2': 'MY ART',
-                'building4': 'PROJECT 4'
+                'lotta-building': 'LOTTA HASSELBLAD',
+                'myart-building': 'MY ART',
+                'club-building': 'CLUB CLASSICS'
             };
 
             // Track the cursor position with a small easing for smoothness
@@ -943,6 +999,10 @@
     </script>
 </head>
 <body class="loading">
+    <div class="loading-indicator">
+        <div class="loading-spinner"></div>
+        <div class="loading-text">LOADING</div>
+    </div>
     <video class="background-video" autoplay loop muted playsinline webkit-playsinline preload="auto">
         <source src="resources/clouds.mp4" type="video/mp4">
     </video>
@@ -959,23 +1019,23 @@
             <img src="resources/butterfly.gif" class="butterfly" alt="Butterfly">
         </div>
         
-        <div id="building1" class="building-container">
-            <img src="resources/house 1.png" class="house" alt="House 1">
-            <div id="house-line-1" class="house-line"></div>
-            <div id="house-blocker-1" class="house-click-blocker"></div>
+        <div id="lotta-building" class="building-container">
+            <img src="resources/house 1.png" class="house" alt="Lotta House">
+            <div id="house-line-lotta" class="house-line"></div>
+            <div id="house-blocker-lotta" class="house-click-blocker"></div>
             <img src="resources/palmtree.gif" class="palmtree" alt="Palm tree">
         </div>
         
-        <div id="building4" class="building-container">
-            <img src="resources/house 4.png" class="house" alt="House 4">
-            <div id="house-line-4" class="house-line"></div>
-            <div id="house-blocker-4" class="house-click-blocker"></div>
+        <div id="club-building" class="building-container">
+            <img src="resources/house 4.png" class="house" alt="Club House">
+            <div id="house-line-club" class="house-line"></div>
+            <div id="house-blocker-club" class="house-click-blocker"></div>
         </div>
         
-        <div id="building2" class="building-container">
-            <img src="resources/house 2.png" class="house" alt="House 2">
-            <div id="house-line-2" class="house-line"></div>
-            <div id="house-blocker-2" class="house-click-blocker"></div>
+        <div id="myart-building" class="building-container">
+            <img src="resources/house 2.png" class="house" alt="My Art House">
+            <div id="house-line-myart" class="house-line"></div>
+            <div id="house-blocker-myart" class="house-click-blocker"></div>
             <img src="resources/sixten.gif" class="sixten" alt="Sixten">
         </div>
         

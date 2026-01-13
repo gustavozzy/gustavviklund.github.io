@@ -86,6 +86,25 @@
             transition: transform 200ms cubic-bezier(0.4, 0, 0.2, 1), width 320ms ease, height 320ms ease, padding 320ms ease, background 320ms ease, border-radius 320ms ease;
         }
         
+        /* Cursor covering button with invert blend mode */
+        .custom-cursor.is-covering-button {
+            transform-origin: center center;
+            mix-blend-mode: difference;
+        }
+        .custom-cursor.is-covering-button .custom-cursor-shape {
+            width: 100%;
+            height: 100%;
+            padding: 0;
+            transform: translate(-50%, -50%);
+            background: rgb(255, 255, 255);
+            border-radius: 0;
+            display: block;
+            will-change: transform;
+        }
+        .custom-cursor.is-covering-button .custom-cursor-text {
+            opacity: 0;
+        }
+        
         .project-page {
             min-height: 100vh;
             padding: 40px 60px;
@@ -333,19 +352,19 @@
 
             <section class="gallery-grid">
                 <div class="gallery-item">
-                    <img src="resources/billie.jpg" alt="Billie">
+                    <img src="resources/billie.png" alt="Billie">
                 </div>
                 <div class="gallery-item">
-                    <img src="resources/frog.jpg" alt="Frog">
+                    <img src="resources/frog.png" alt="Frog">
                 </div>
                 <div class="gallery-item">
-                    <img src="resources/salamander.jpg" alt="Salamander">
+                    <img src="resources/salamander.png" alt="Salamander">
                 </div>
                 <div class="gallery-item">
-                    <img src="resources/bird_eye.jpg" alt="Bird Eye">
+                    <img src="resources/bird_eye.png" alt="Bird Eye">
                 </div>
                 <div class="gallery-item">
-                    <img src="resources/scorpion.jpg" alt="Scorpion">
+                    <img src="resources/scorpion.png" alt="Scorpion">
                 </div>
             </section>
         </div>
@@ -382,8 +401,12 @@
             renderCursor();
 
             document.addEventListener('mousemove', (e) => {
+                // Update cursor position normally, or with sticky effect if on button
+                if (!isHoveringButton) {
                 targetX = e.clientX;
                 targetY = e.clientY;
+                }
+                // If hovering button, the button's mousemove handler will update targetX/Y with sticky effect
             });
 
             // Add click animation - ensure shrink completes before allowing expansion
@@ -416,7 +439,136 @@
                 }, remaining);
             });
 
-            const hoverTargets = document.querySelectorAll('a, button, .back-button');
+            // Get back button reference (used in multiple places)
+            const backButton = document.querySelector('.back-button');
+            
+            // Track if hovering over back button (used to lock cursor position)
+            let isHoveringButton = false;
+            
+            // Special handling for back button
+            if (backButton) {
+                let buttonRect = null;
+                let textWidth = 0;
+                let textHeight = 0;
+                
+                // Function to measure actual text width
+                const measureTextWidth = () => {
+                    const tempSpan = document.createElement('span');
+                    const styles = window.getComputedStyle(backButton);
+                    tempSpan.style.position = 'absolute';
+                    tempSpan.style.visibility = 'hidden';
+                    tempSpan.style.whiteSpace = 'nowrap';
+                    tempSpan.style.fontSize = styles.fontSize;
+                    tempSpan.style.fontFamily = styles.fontFamily;
+                    tempSpan.style.fontWeight = styles.fontWeight;
+                    tempSpan.style.textTransform = styles.textTransform;
+                    tempSpan.style.letterSpacing = styles.letterSpacing;
+                    tempSpan.textContent = backButton.textContent.trim();
+                    document.body.appendChild(tempSpan);
+                    textWidth = tempSpan.offsetWidth;
+                    textHeight = tempSpan.offsetHeight;
+                    document.body.removeChild(tempSpan);
+                };
+                
+                const updateButtonRect = () => {
+                    buttonRect = backButton.getBoundingClientRect();
+                    measureTextWidth();
+                };
+                
+                updateButtonRect();
+                window.addEventListener('resize', updateButtonRect);
+                
+                backButton.addEventListener('mouseenter', (e) => {
+                    updateButtonRect();
+                    // Check if mouse is actually within text bounds
+                    const textLeft = buttonRect.left;
+                    const textRight = buttonRect.left + textWidth;
+                    const textTop = buttonRect.top;
+                    const textBottom = buttonRect.top + textHeight;
+                    
+                    if (e.clientX >= textLeft && e.clientX <= textRight && 
+                        e.clientY >= textTop && e.clientY <= textBottom) {
+                        isHoveringButton = true;
+                        cursor.classList.add('is-covering-button');
+                        cursor.classList.remove('is-hovering');
+                        
+                        // Update cursor shape size to match text width with padding
+                        const cursorShape = cursor.querySelector('.custom-cursor-shape');
+                        if (cursorShape) {
+                            const paddingX = 12; // Horizontal padding
+                            const paddingY = 8; // Vertical padding
+                            cursorShape.style.width = (textWidth + paddingX * 2) + 'px';
+                            cursorShape.style.height = (textHeight + paddingY * 2) + 'px';
+                        }
+                        
+                        // Snap cursor to button center immediately
+                        const centerX = buttonRect.left + (textWidth / 2);
+                        const centerY = buttonRect.top + (textHeight / 2);
+                        targetX = centerX;
+                        targetY = centerY;
+                        cursorX = centerX;
+                        cursorY = centerY;
+                        cursor.style.transform = `translate3d(${centerX}px, ${centerY}px, 0)`;
+                    }
+                });
+                
+                backButton.addEventListener('mousemove', (e) => {
+                    updateButtonRect();
+                    // Check if mouse is actually within text bounds
+                    const textLeft = buttonRect.left;
+                    const textRight = buttonRect.left + textWidth;
+                    const textTop = buttonRect.top;
+                    const textBottom = buttonRect.top + textHeight;
+                    const isInTextBounds = e.clientX >= textLeft && e.clientX <= textRight && 
+                                          e.clientY >= textTop && e.clientY <= textBottom;
+                    
+                    if (isInTextBounds) {
+                        if (!isHoveringButton) {
+                            // Just entered text bounds
+                            isHoveringButton = true;
+                            cursor.classList.add('is-covering-button');
+                            cursor.classList.remove('is-hovering');
+                            
+                            const cursorShape = cursor.querySelector('.custom-cursor-shape');
+                            if (cursorShape) {
+                                const paddingX = 12;
+                                const paddingY = 8;
+                                cursorShape.style.width = (textWidth + paddingX * 2) + 'px';
+                                cursorShape.style.height = (textHeight + paddingY * 2) + 'px';
+                            }
+                        }
+                        
+                        // Allow some movement but with strong pull toward button center
+                        const centerX = buttonRect.left + (textWidth / 2);
+                        const centerY = buttonRect.top + (textHeight / 2);
+                        // Blend mouse position with center (70% center, 30% mouse) for sticky effect
+                        targetX = centerX * 0.7 + e.clientX * 0.3;
+                        targetY = centerY * 0.7 + e.clientY * 0.3;
+                    } else if (isHoveringButton) {
+                        // Left text bounds but still on button element
+                        isHoveringButton = false;
+                        cursor.classList.remove('is-covering-button');
+                        const cursorShape = cursor.querySelector('.custom-cursor-shape');
+                        if (cursorShape) {
+                            cursorShape.style.width = '';
+                            cursorShape.style.height = '';
+                        }
+                    }
+                });
+                
+                backButton.addEventListener('mouseleave', () => {
+                    isHoveringButton = false;
+                    cursor.classList.remove('is-covering-button');
+                    const cursorShape = cursor.querySelector('.custom-cursor-shape');
+                    if (cursorShape) {
+                        cursorShape.style.width = '';
+                        cursorShape.style.height = '';
+                    }
+                });
+            }
+            
+            // Regular hover for other links and buttons
+            const hoverTargets = document.querySelectorAll('a:not(.back-button), button');
             hoverTargets.forEach(el => {
                 el.addEventListener('mouseenter', () => {
                     cursorText.textContent = el.textContent.trim() || 'BACK';
@@ -503,8 +655,7 @@
                 }, 800); // transition duration
             };
 
-            // Intercept back button click
-            const backButton = document.querySelector('.back-button');
+            // Intercept back button click (after reverseAnimation is defined)
             if (backButton) {
                 backButton.addEventListener('click', (e) => {
                     e.preventDefault();
