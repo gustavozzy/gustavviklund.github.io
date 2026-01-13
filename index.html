@@ -332,7 +332,7 @@
             bottom: 10vh;
             left: 0;
             width: calc(1650px + 48vh + 100px);
-            min-width: 100vw;
+            min-width: 150vw; /* Increased to ensure edges never show */
             height: calc(100vh - 10vh);
             object-fit: cover;
             z-index: 0;
@@ -451,7 +451,19 @@
             // Parallax effect for skyline (moves slower than scroll for depth effect)
             const skyline = document.querySelector('.skyline');
             if (skyline) {
-                skyline.style.transform = `translateX(${scrolled * -0.1}px)`;
+                // Increased parallax effect (more negative = moves more)
+                const parallaxMultiplier = -0.3;
+                const rawTransform = scrolled * parallaxMultiplier;
+                
+                // Calculate constraints to prevent edges from showing
+                const skylineWidth = skyline.offsetWidth;
+                const viewportWidth = window.innerWidth;
+                const maxTransform = 0; // Can't move right past original position
+                const minTransform = viewportWidth - skylineWidth; // Can't move left past right edge
+                
+                // Clamp the transform value
+                const clampedTransform = Math.max(minTransform, Math.min(maxTransform, rawTransform));
+                skyline.style.transform = `translateX(${clampedTransform}px)`;
             }
             
         }
@@ -761,7 +773,19 @@
                         // Update skyline parallax
                         const skyline = document.querySelector('.skyline');
                         if (skyline) {
-                            skyline.style.transform = `translateX(${scrolled * -0.1}px)`;
+                            // Increased parallax effect (more negative = moves more)
+                            const parallaxMultiplier = -0.3;
+                            const rawTransform = scrolled * parallaxMultiplier;
+                            
+                            // Calculate constraints to prevent edges from showing
+                            const skylineWidth = skyline.offsetWidth;
+                            const viewportWidth = window.innerWidth;
+                            const maxTransform = 0; // Can't move right past original position
+                            const minTransform = viewportWidth - skylineWidth; // Can't move left past right edge
+                            
+                            // Clamp the transform value
+                            const clampedTransform = Math.max(minTransform, Math.min(maxTransform, rawTransform));
+                            skyline.style.transform = `translateX(${clampedTransform}px)`;
                         }
                         
                         // Update car position
