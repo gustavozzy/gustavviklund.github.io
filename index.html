@@ -10,6 +10,12 @@
         html {
             overflow: hidden;
             cursor: none;
+            scrollbar-width: none; /* Firefox */
+            -ms-overflow-style: none; /* IE and Edge */
+        }
+        
+        html::-webkit-scrollbar {
+            display: none; /* Chrome, Safari, Opera */
         }
         
         * {
@@ -28,6 +34,12 @@
             overscroll-behavior-x: none;
             overscroll-behavior-y: none;
             cursor: none; /* Use the custom cursor instead of the native one */
+            scrollbar-width: none; /* Firefox */
+            -ms-overflow-style: none; /* IE and Edge */
+        }
+        
+        body::-webkit-scrollbar {
+            display: none; /* Chrome, Safari, Opera */
         }
         
         /* Prevent vertical scrolling on mobile */
@@ -64,7 +76,7 @@
         
         /* Ensure ground returns to normal height when loading is removed */
         .ground:not(.loading):not(.expanding) {
-            height: 10vh !important;
+            height: 0 !important;
         }
         
         /* Loading indicator */
@@ -211,7 +223,7 @@
             bottom: 0;
             left: 0;
             width: 100%;
-            height: 10vh;
+            height: 0;
             background-repeat: no-repeat;
             background-size: cover;
             background-position: center;
@@ -229,8 +241,8 @@
 
         .building-container {
             position: absolute;
-            bottom: 10vh;  /* Keep this to align with ground */
-            height: calc(100vh - 10vh);  /* Fill from ground to top */
+            bottom: 0;  /* Align to bottom of screen */
+            height: 100vh;  /* Fill entire viewport height */
             width: 48vh;
             transform-origin: bottom center;
             background-color: rgba(255, 0, 0, 0);
@@ -246,6 +258,17 @@
             z-index: 100;
             pointer-events: auto; /* Enable clicks on house image */
             cursor: none;
+        }
+
+        .house-glitch {
+            opacity: 0;
+            transition: opacity 0.05s ease;
+            pointer-events: none; /* Don't interfere with clicks */
+            z-index: 101; /* Above the original house */
+        }
+
+        .house-glitch.active {
+            opacity: 1;
         }
 
         .house-click-blocker {
@@ -297,7 +320,7 @@
             transform: scale(1);
         }
         #myart-building { 
-            left: 1600px; 
+            left: 1650px; 
             z-index: 3;
             transform-origin: bottom center;
             transform: scale(1);
@@ -317,7 +340,7 @@
 
         .car {
             position: fixed;
-            bottom: 9.9vh;
+            bottom: 0;
             height: 7vh;
             width: auto;
             object-fit: contain;
@@ -329,11 +352,11 @@
 
         .skyline {
             position: fixed;
-            bottom: 10vh;
+            bottom: 0;
             left: 0;
             width: calc(1650px + 48vh + 100px);
             min-width: 150vw; /* Increased to ensure edges never show */
-            height: calc(100vh - 10vh);
+            height: 100vh;
             object-fit: cover;
             z-index: 0;
             pointer-events: none;
@@ -365,7 +388,7 @@
             height: 10%;  /* Adjust size as needed */
             width: auto;
             bottom: 45%;  /* Adjust position as needed */
-            left: -25%;    /* Adjust position as needed */
+            left: -28%;    /* Adjust position as needed */
             object-fit: contain;
             user-select: none;
             z-index: 100;
@@ -376,7 +399,7 @@
             height: 20%;  /* Adjust size as needed */
             width: auto;
             bottom: 50%;  /* Adjust position as needed */
-            left: 210%;    /* Adjust position as needed */
+            left: 370%;    /* Adjust position as needed */
             object-fit: contain;
             user-select: none;
             z-index: 100;
@@ -410,10 +433,44 @@
             height: 12%;  /* Adjust size as needed */
             width: auto;
             bottom: 48.5%;  /* Adjust position as needed */
-            left: 51%;    /* Adjust position as needed */
+            left: 57%;    /* Adjust position as needed */
             object-fit: contain;
             user-select: none;
             z-index: 1;
+        }
+
+        /* Mobile overlay */
+        .mobile-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgb(0, 0, 0);
+            z-index: 99999;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .mobile-overlay.active {
+            display: flex;
+        }
+
+        .mobile-overlay-message {
+            font-family: Arial, sans-serif;
+            font-weight: bold;
+            font-size: 24px;
+            color: rgb(255, 255, 255);
+            text-transform: uppercase;
+            text-align: center;
+            padding: 20px;
+        }
+
+        @media (max-width: 768px) {
+            .mobile-overlay {
+                display: flex;
+            }
         }
 
     </style>
@@ -505,8 +562,11 @@
         window.addEventListener('wheel', function(e) {
             e.preventDefault();
             
-            // Calculate scroll delta
-            const scrollDelta = e.deltaY * 0.15; // Slower scrolling (15% of normal speed)
+            // Calculate scroll delta from both vertical and horizontal wheel movement
+            const verticalDelta = e.deltaY * 0.15; // Slower scrolling (15% of normal speed)
+            const horizontalDelta = e.deltaX * 0.15; // Same speed for horizontal scrolling
+            const scrollDelta = verticalDelta + horizontalDelta; // Combine both directions
+            
             const bodyScrollWidth = document.body.scrollWidth;
             const maxScroll = Math.max(bodyScrollWidth - window.innerWidth, 0);
             
@@ -850,7 +910,7 @@
                 lottaHouse.addEventListener('click', function(e) {
                     e.stopPropagation();
                     e.preventDefault();
-                    navigateWithTransition('project3.html');
+                    navigateWithTransition('lotta-hasselblad.html');
                 });
             }
             
@@ -858,7 +918,7 @@
                 myartHouse.addEventListener('click', function(e) {
                     e.stopPropagation();
                     e.preventDefault();
-                    navigateWithTransition('project2.html');
+                    navigateWithTransition('my-art.html');
                 });
             }
             
@@ -866,7 +926,7 @@
                 anniHouse.addEventListener('click', function(e) {
                     e.stopPropagation();
                     e.preventDefault();
-                    navigateWithTransition('project1.html');
+                    navigateWithTransition('anni-sushi.html');
                 });
             }
             
@@ -874,7 +934,7 @@
                 clubHouse.addEventListener('click', function(e) {
                     e.stopPropagation();
                     e.preventDefault();
-                    navigateWithTransition('project4.html');
+                    navigateWithTransition('club-classics.html');
                 });
             }
 
@@ -885,6 +945,76 @@
             setTimeout(positionHouseLines, 500);
             // Also position on window resize
             window.addEventListener('resize', positionHouseLines);
+
+            // Glitch effect for house 1
+            const houseGlitch = document.querySelector('#lotta-building .house-glitch');
+            if (houseGlitch) {
+                function triggerGlitch() {
+                    // Random duration between 50-150ms for subtle glitch
+                    const duration1 = 50 + Math.random() * 100;
+                    const shouldDoubleGlitch = Math.random() > 0.333; // 66.67% chance of double glitch (twice as often as single)
+                    
+                    // First glitch
+                    houseGlitch.classList.add('active');
+                    setTimeout(() => {
+                        houseGlitch.classList.remove('active');
+                        
+                        // Sometimes do a second glitch after a short gap
+                        if (shouldDoubleGlitch) {
+                            const gap = 30 + Math.random() * 50; // Gap between glitches (30-80ms)
+                            const duration2 = 50 + Math.random() * 100;
+                            setTimeout(() => {
+                                houseGlitch.classList.add('active');
+                                setTimeout(() => {
+                                    houseGlitch.classList.remove('active');
+                                }, duration2);
+                            }, gap);
+                        }
+                    }, duration1);
+                    
+                    // Schedule next glitch - random interval between 3-10 seconds
+                    const nextGlitch = 3000 + Math.random() * 7000;
+                    setTimeout(triggerGlitch, nextGlitch);
+                }
+                
+                // Start the glitch effect after initial delay
+                setTimeout(triggerGlitch, 2000 + Math.random() * 3000);
+            }
+
+            // Glitch effect for house 4
+            const house4Glitch = document.querySelector('#club-building .house-glitch');
+            if (house4Glitch) {
+                function triggerGlitch4() {
+                    // Random duration between 50-150ms for subtle glitch
+                    const duration1 = 50 + Math.random() * 100;
+                    const shouldDoubleGlitch = Math.random() > 0.333; // 66.67% chance of double glitch (twice as often as single)
+                    
+                    // First glitch
+                    house4Glitch.classList.add('active');
+                    setTimeout(() => {
+                        house4Glitch.classList.remove('active');
+                        
+                        // Sometimes do a second glitch after a short gap
+                        if (shouldDoubleGlitch) {
+                            const gap = 30 + Math.random() * 50; // Gap between glitches (30-80ms)
+                            const duration2 = 50 + Math.random() * 100;
+                            setTimeout(() => {
+                                house4Glitch.classList.add('active');
+                                setTimeout(() => {
+                                    house4Glitch.classList.remove('active');
+                                }, duration2);
+                            }, gap);
+                        }
+                    }, duration1);
+                    
+                    // Schedule next glitch - random interval between 3-10 seconds
+                    const nextGlitch = 3000 + Math.random() * 7000;
+                    setTimeout(triggerGlitch4, nextGlitch);
+                }
+                
+                // Start the glitch effect after initial delay (different timing from house 1)
+                setTimeout(triggerGlitch4, 3000 + Math.random() * 4000);
+            }
         });
 
         // Add click handlers for buildings, set logo, and wire up custom cursor - wait for DOM to load
@@ -1019,10 +1149,35 @@
                     }
                 }, 2000);
             }
+
+            // Mobile detection and overlay
+            function isMobileDevice() {
+                return /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) || 
+                       (window.innerWidth <= 768 && 'ontouchstart' in window);
+            }
+
+            const mobileOverlay = document.querySelector('.mobile-overlay');
+            if (isMobileDevice()) {
+                mobileOverlay.classList.add('active');
+            } else {
+                mobileOverlay.classList.remove('active');
+            }
+
+            // Also check on resize
+            window.addEventListener('resize', () => {
+                if (isMobileDevice()) {
+                    mobileOverlay.classList.add('active');
+                } else {
+                    mobileOverlay.classList.remove('active');
+                }
+            });
         });
     </script>
 </head>
 <body class="loading">
+    <div class="mobile-overlay">
+        <div class="mobile-overlay-message">PLEASE OPEN THIS WEBSITE ON A COMPUTER</div>
+    </div>
     <div class="loading-indicator">
         <div class="loading-spinner"></div>
         <div class="loading-text">LOADING</div>
@@ -1045,6 +1200,7 @@
         
         <div id="lotta-building" class="building-container">
             <img src="resources/house 1.png" class="house" alt="Lotta House">
+            <img src="resources/house 1 off.png" class="house house-glitch" alt="Lotta House Glitch">
             <div id="house-line-lotta" class="house-line"></div>
             <div id="house-blocker-lotta" class="house-click-blocker"></div>
             <img src="resources/palmtree.gif" class="palmtree" alt="Palm tree">
@@ -1052,6 +1208,7 @@
         
         <div id="club-building" class="building-container">
             <img src="resources/house 4.png" class="house" alt="Club House">
+            <img src="resources/house 4 off.png" class="house house-glitch" alt="Club House Glitch">
             <div id="house-line-club" class="house-line"></div>
             <div id="house-blocker-club" class="house-click-blocker"></div>
         </div>
