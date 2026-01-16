@@ -200,6 +200,19 @@
             transform: scaleX(-1);
         }
         
+        .clouds-darken-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgb(0, 0, 0);
+            z-index: 0;
+            pointer-events: none;
+            opacity: 0;
+            transition: opacity 0.1s ease;
+        }
+        
         /* Fallback background for browsers that don't support the video */
         body::before {
             content: '';
@@ -215,7 +228,7 @@
         .scene-container {
             position: relative;
             height: 100%;
-            width: calc(1650px + 48vh + 100px); /* Content width + start padding + end padding */
+            width: calc(1650px + 48vh + 1000px); /* Content width + start padding + end padding */
         }
 
         .ground {
@@ -347,6 +360,8 @@
             user-select: none;
             z-index: 4;
             left: 15px;
+            pointer-events: auto; /* enable clicks on car */
+            cursor: none;
         }
 
 
@@ -354,7 +369,7 @@
             position: fixed;
             bottom: 0;
             left: 0;
-            width: calc(1650px + 48vh + 100px);
+            width: calc(1650px + 48vh + 1000px);
             min-width: 150vw; /* Increased to ensure edges never show */
             height: 100vh;
             object-fit: cover;
@@ -399,7 +414,7 @@
             height: 20%;  /* Adjust size as needed */
             width: auto;
             bottom: 50%;  /* Adjust position as needed */
-            left: 370%;    /* Adjust position as needed */
+            left: 190%;    /* Adjust position as needed */
             object-fit: contain;
             user-select: none;
             z-index: 100;
@@ -439,6 +454,31 @@
             z-index: 1;
         }
 
+        .bio-text {
+            position: absolute;
+            left: 2700px;
+            top: 55%;
+            transform: translateY(-50%);
+            width: 700px;
+            color: rgb(255, 255, 255);
+            font-family: 'Avenir', 'Avenir Next', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            font-size: 16px;
+            font-weight: 500;
+            line-height: 1.6;
+            z-index: 50;
+            pointer-events: none;
+            user-select: none;
+        }
+
+        .bio-text p {
+            margin: 0 0 1.5em 0;
+        }
+
+        .bio-text p:last-child {
+            margin-bottom: 0;
+        }
+
+
         /* Mobile overlay */
         .mobile-overlay {
             display: none;
@@ -471,6 +511,43 @@
             .mobile-overlay {
                 display: flex;
             }
+        }
+
+        /* Scroll prompt text */
+        .scroll-prompt {
+            position: fixed;
+            bottom: 30px;
+            left: 50%;
+            transform: translateX(-50%);
+            color: rgb(255, 255, 255);
+            font-family: 'Avenir', 'Avenir Next', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            font-size: 16px;
+            font-weight: 500;
+            letter-spacing: 2px;
+            text-transform: uppercase;
+            z-index: 2000;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.5s ease;
+        }
+
+        .scroll-prompt::before {
+            content: '';
+            position: absolute;
+            bottom: -350px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 400px;
+            height: 400px;
+            background-color: rgb(0, 0, 0);
+            border-radius: 50%;
+            filter: blur(50px);
+            z-index: -1;
+            opacity: 0.8;
+        }
+
+        .scroll-prompt.visible {
+            opacity: 1;
         }
 
     </style>
@@ -523,6 +600,32 @@
                 skyline.style.transform = `translateX(${clampedTransform}px)`;
             }
             
+            // Parallax effect for bio text (moves with palmtree - same as lotta-building)
+            const bioText = document.querySelector('.bio-text');
+            if (bioText) {
+                // Match palmtree movement - palmtree is in lotta-building which moves at -0.3
+                const parallaxMultiplier = -0.3;
+                const parallaxOffset = scrolled * parallaxMultiplier;
+                bioText.style.transform = `translateY(-50%) translateX(${parallaxOffset}px)`;
+            }
+            
+            // Darken clouds background after 800px scroll
+            const cloudsOverlay = document.querySelector('.clouds-darken-overlay');
+            if (cloudsOverlay) {
+                const darkenStart = 800;
+                if (scrolled > darkenStart) {
+                    // Calculate opacity: starts at 0 when scrolled = 1600px, increases as you scroll more
+                    // You can adjust the max opacity and the rate of darkening here
+                    const scrollBeyond = scrolled - darkenStart;
+                    const maxDarkness = 0.7; // Maximum opacity (0.7 = 70% dark)
+                    const darkenRange = 1000; // Distance over which it reaches max darkness (1000px)
+                    const opacity = Math.min(scrollBeyond / darkenRange, maxDarkness);
+                    cloudsOverlay.style.opacity = opacity;
+                } else {
+                    cloudsOverlay.style.opacity = 0;
+                }
+            }
+            
         }
         
         // Smooth scrolling implementation
@@ -557,6 +660,63 @@
             currentScrollLeft = document.body.scrollLeft || 0;
             targetScrollLeft = currentScrollLeft;
         }
+        
+        // Scroll prompt functionality
+        let hasScrolled = false;
+        let scrollPromptTimeout = null;
+        let scrollPrompt = null;
+        
+        function initScrollPrompt() {
+            if (scrollPrompt) return; // Already initialized
+            
+            scrollPrompt = document.createElement('div');
+            scrollPrompt.className = 'scroll-prompt';
+            scrollPrompt.textContent = 'SCROLL TO MOVE';
+            document.body.appendChild(scrollPrompt);
+        }
+        
+        function showScrollPrompt() {
+            if (!hasScrolled && scrollPrompt) {
+                scrollPrompt.style.transition = 'opacity 2s ease';
+                scrollPrompt.classList.add('visible');
+            }
+        }
+        
+        function hideScrollPrompt() {
+            if (scrollPrompt) {
+                scrollPrompt.style.transition = 'opacity 0.5s ease';
+                // Force reflow to ensure transition change takes effect
+                scrollPrompt.offsetHeight;
+                scrollPrompt.classList.remove('visible');
+            }
+        }
+        
+        function checkScroll() {
+            const currentScroll = document.body.scrollLeft || 0;
+            if (currentScroll > 5) { // Use a small threshold to account for any initial scroll
+                hasScrolled = true;
+                hideScrollPrompt();
+                if (scrollPromptTimeout) {
+                    clearTimeout(scrollPromptTimeout);
+                    scrollPromptTimeout = null;
+                }
+            }
+        }
+        
+        // Initialize scroll prompt when DOM is ready
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', initScrollPrompt);
+        } else {
+            initScrollPrompt();
+        }
+        
+        // Monitor scroll events
+        window.addEventListener('wheel', function() {
+            checkScroll();
+        }, { passive: true });
+        
+        // Also check scroll position periodically
+        setInterval(checkScroll, 100);
         
         // Wheel event for horizontal scroll
         window.addEventListener('wheel', function(e) {
@@ -794,6 +954,11 @@
                 body.classList.remove('loading');
                 body.classList.add('loaded');
                 
+                // Show scroll prompt after 3 seconds if user hasn't scrolled
+                if (!hasScrolled && scrollPrompt && scrollPrompt.parentNode) {
+                    scrollPromptTimeout = setTimeout(showScrollPrompt, 3000);
+                }
+                
                 // Update skyline width after content loads
                 setTimeout(function() {
                     const skyline = document.querySelector('.skyline');
@@ -812,6 +977,12 @@
                         // Restore horizontal scroll
                         const scrollPos = parseInt(savedScrollPosition, 10);
                         document.body.scrollLeft = scrollPos;
+                        
+                        // Mark as scrolled if position is not at start
+                        if (scrollPos > 5) {
+                            hasScrolled = true;
+                            hideScrollPrompt();
+                        }
                         
                         // Sync smooth scroll variables
                         currentScrollLeft = scrollPos;
@@ -858,6 +1029,29 @@
                                 const maxCarTravel = window.innerWidth - car.offsetWidth - 30;
                                 const carPosition = progress * maxCarTravel;
                                 car.style.transform = `translateX(${carPosition}px)`;
+                            }
+                        }
+                        
+                        // Update bio text parallax
+                        const bioText = document.querySelector('.bio-text');
+                        if (bioText) {
+                            const parallaxMultiplier = -0.3;
+                            const parallaxOffset = scrolled * parallaxMultiplier;
+                            bioText.style.transform = `translateY(-50%) translateX(${parallaxOffset}px)`;
+                        }
+                        
+                        // Update clouds darkening overlay
+                        const cloudsOverlay = document.querySelector('.clouds-darken-overlay');
+                        if (cloudsOverlay) {
+                            const darkenStart = 800;
+                            if (scrolled > darkenStart) {
+                                const scrollBeyond = scrolled - darkenStart;
+                                const maxDarkness = 0.7;
+                                const darkenRange = 1000;
+                                const opacity = Math.min(scrollBeyond / darkenRange, maxDarkness);
+                                cloudsOverlay.style.opacity = opacity;
+                            } else {
+                                cloudsOverlay.style.opacity = 0;
                             }
                         }
                         
@@ -1015,6 +1209,7 @@
                 // Start the glitch effect after initial delay (different timing from house 1)
                 setTimeout(triggerGlitch4, 3000 + Math.random() * 4000);
             }
+
         });
 
         // Add click handlers for buildings, set logo, and wire up custom cursor - wait for DOM to load
@@ -1118,6 +1313,7 @@
             // Update logo on window resize
             window.addEventListener('resize', setLogo);
             
+            
             // Function to update skyline width to match scrollable content
             function updateSkylineWidth() {
                 const skyline = document.querySelector('.skyline');
@@ -1171,6 +1367,7 @@
                     mobileOverlay.classList.remove('active');
                 }
             });
+
         });
     </script>
 </head>
@@ -1185,6 +1382,7 @@
     <video class="background-video" autoplay loop muted playsinline webkit-playsinline preload="auto">
         <source src="resources/clouds.mp4" type="video/mp4">
     </video>
+    <div class="clouds-darken-overlay"></div>
     <img src="resources/skyline.png" class="skyline" alt="Skyline">
     <img src="" class="title" alt="Title">
     <div class="background"></div>
@@ -1218,6 +1416,14 @@
             <div id="house-line-myart" class="house-line"></div>
             <div id="house-blocker-myart" class="house-click-blocker"></div>
             <img src="resources/sixten.gif" class="sixten" alt="Sixten">
+        </div>
+        
+        <div class="bio-text">
+            <p>I'm a 21-year-old creative with a strong passion for graphic design and visual storytelling. Creativity has always been a big part of my life, from drawing and photography to music and filmmaking. I'm constantly curious to learn new things and grow in inspiring, idea-driven environments.</p>
+
+            <p>In 2024, I had the opportunity to intern at an advertising agency, where I gained hands-on experience across concept development, visual identity work, and art direction. I love shaping ideas into clear, compelling design systems and my goal is to build a career doing exactly that.</p>
+
+            <p>I'm currently studying in the Digital Creative program at Hyper Island in Stockholm, while also producing music and playing piano in my free time. Looking ahead, I want to work in a role where I can combine design and music by creating visual identities, album artwork, and campaign visuals for artists and releases.</p>
         </div>
         
         <img src="resources/car.png" class="car" id="car" alt="Car">

@@ -186,8 +186,22 @@
             text-decoration: none;
             font-size: 0.9rem;
             text-transform: uppercase;
-            margin-bottom: 20px;
+            margin-bottom: 10px;
             cursor: none;
+        }
+
+        .back-button::before {
+            content: '';
+            display: inline-block;
+            width: 14px;
+            height: 14px;
+            margin-right: 6px;
+            vertical-align: middle;
+            transform: translateY(-1.5px);
+            background-image: url('resources/arrow_left.svg');
+            background-size: contain;
+            background-repeat: no-repeat;
+            background-position: center;
         }
 
         .back-button:hover {
@@ -211,21 +225,28 @@
         }
 
         .gallery-meta {
-            margin-top: 24px;
+            margin-top: 0;
+            margin-bottom: 24px;
             font-size: 0.9rem;
         }
 
         .meta-row {
             display: flex;
-            gap: 14px;
-            margin-top: 6px;
+            flex-direction: column;
+            gap: 4px;
+            margin-top: 16px;
+        }
+
+        .meta-row:first-child {
+            margin-top: 0;
         }
 
         .meta-label {
-            font-weight: 600;
+            font-weight: 400;
         }
 
         .meta-value {
+            font-weight: 600;
             opacity: 0.9;
         }
 
@@ -303,11 +324,11 @@
             transition-delay: 0.2s;
         }
 
-        .gallery-text p {
+        .gallery-meta {
             transition-delay: 0.3s;
         }
 
-        .gallery-meta {
+        .gallery-text p {
             transition-delay: 0.4s;
         }
 
@@ -437,22 +458,12 @@
     </div>
     <img src="" class="project-logo fade-in-up" alt="Logo">
     <div class="project-page">
+        <a href="index.html" class="back-button fade-in-up">Back to city</a>
         <div class="gallery-layout">
             <div class="gallery-header">
                 <div class="gallery-text">
-                    <a href="index.html" class="back-button fade-in-up">Back to city</a>
                     <h1 class="gallery-title fade-in-up">MY ART</h1>
-                    <p class="fade-in-up">A curated collection of works showcasing contemporary art and visual expression.</p>
-                    <div class="gallery-meta fade-in-up">
-                        <div class="meta-row">
-                            <span class="meta-label">CURATOR</span>
-                            <span class="meta-value">Name</span>
-                        </div>
-                        <div class="meta-row">
-                            <span class="meta-label">YEAR</span>
-                            <span class="meta-value">2025</span>
-                        </div>
-                    </div>
+                    <p class="fade-in-up">A curated collection of works showcasing my art and visual expression.</p>
                 </div>
             </div>
 

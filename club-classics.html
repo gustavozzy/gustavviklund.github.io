@@ -195,6 +195,20 @@
             cursor: none;
         }
 
+        .back-button::before {
+            content: '';
+            display: inline-block;
+            width: 14px;
+            height: 14px;
+            margin-right: 6px;
+            vertical-align: middle;
+            transform: translateY(-1.5px);
+            background-image: url('resources/arrow_left.svg');
+            background-size: contain;
+            background-repeat: no-repeat;
+            background-position: center;
+        }
+
         .back-button:hover {
             text-decoration: none;
         }
@@ -223,6 +237,12 @@
             align-items: flex-end;
         }
 
+        .project-text-main .project-meta {
+            margin-top: 0;
+            margin-bottom: 24px;
+            justify-content: flex-start;
+        }
+
         .meta-content {
             display: flex;
             flex-direction: column;
@@ -230,15 +250,21 @@
 
         .meta-row {
             display: flex;
-            gap: 14px;
-            margin-top: 6px;
+            flex-direction: column;
+            gap: 4px;
+            margin-top: 16px;
+        }
+
+        .meta-row:first-child {
+            margin-top: 0;
         }
 
         .meta-label {
-            font-weight: 600;
+            font-weight: 400;
         }
 
         .meta-value {
+            font-weight: 600;
             opacity: 0.9;
         }
 
@@ -250,6 +276,20 @@
             text-transform: uppercase;
             cursor: none;
             align-self: flex-end;
+        }
+
+        .next-button::after {
+            content: '';
+            display: inline-block;
+            width: 14px;
+            height: 14px;
+            margin-left: 6px;
+            vertical-align: middle;
+            transform: translateY(-1.5px);
+            background-image: url('resources/arrow_right.svg');
+            background-size: contain;
+            background-repeat: no-repeat;
+            background-position: center;
         }
 
         .next-button:hover {
@@ -331,15 +371,15 @@
             transition-delay: 0.2s;
         }
 
-        .project-text-main p {
+        .project-meta {
             transition-delay: 0.3s;
         }
 
-        .project-text-main p:nth-of-type(2) {
+        .project-text-main p {
             transition-delay: 0.4s;
         }
 
-        .project-meta {
+        .project-text-main p:nth-of-type(2) {
             transition-delay: 0.5s;
         }
 
@@ -451,21 +491,22 @@
             <section class="project-text">
                 <div class="project-text-main">
                     <h1 class="project-title fade-in-up">CLUB CLASSICS</h1>
-                    <p class="fade-in-up">Lorem ipsum dolor sit amet, consectetur adipiscing elit, sed diam nonummy nibh euismod tincidunt ut laoreet dolore magna aliquam erat volutpat. Ut wisi enim ad minim veniam, quis nostrud exerci tation ullamcorper suscipit lobortis nisl ut aliquip ex ea commodo consequat. Duis autem vel eum iriure dolor in hendrerit in vulputate velit esse molestie consequat, vel illum dolore eu feugiat nulla facilisis at vero eros et accumsan et iusto odio dignissim qui blandit praesent luptatum zzril delenit augue duis dolore te feugait nulla facilisi.</p>
-                    <p class="fade-in-up">Lorem ipsum dolor sit amet, cons ectetuer adipiscing elit, sed diam nonummy nibh euismod tincidunt ut laoreet dolore magna aliquam erat volutpat.</p>
+                    <div class="project-meta fade-in-up">
+                        <div class="meta-content">
+                            <div class="meta-row">
+                                <span class="meta-label">CLIENT</span>
+                                <span class="meta-value">Made up brand</span>
+                            </div>
+                            <div class="meta-row">
+                                <span class="meta-label">YEAR</span>
+                                <span class="meta-value">2024</span>
+                            </div>
+                        </div>
+                    </div>
+                    <p class="fade-in-up">A project made in my spare time for a conceptual fasion brand that blends steetwear with luxury.</p>
                 </div>
 
                 <div class="project-meta fade-in-up">
-                    <div class="meta-content">
-                        <div class="meta-row">
-                            <span class="meta-label">CLIENT</span>
-                            <span class="meta-value">Name</span>
-                        </div>
-                        <div class="meta-row">
-                            <span class="meta-label">YEAR</span>
-                            <span class="meta-value">2025</span>
-                        </div>
-                    </div>
                     <a href="lotta-hasselblad.html" class="next-button fade-in-up">Next project</a>
                 </div>
             </section>
