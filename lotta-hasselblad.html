@@ -21,11 +21,13 @@
 
         :root {
             --font-body: 'Helvetica', 'Helvetica Neue', Arial, sans-serif;
-            --font-caps: 'Helvetica Condensed', 'Helvetica Neue Condensed Bold', 'Arial Narrow', Arial, sans-serif;
+            --font-caps: 'Helvetica Neue Condensed Bold', 'HelveticaNeue-CondensedBold', 'Arial Narrow', Arial, sans-serif;
         }
 
         :is(.back-button, .next-button, .scroll-prompt, .mobile-overlay-message, .loading-text, .meta-label, .custom-cursor-text) {
             font-family: var(--font-caps);
+            font-weight: 700;
+            font-stretch: condensed;
         }
 
         h1, h2, h3, h4, h5, h6 {
@@ -111,7 +113,6 @@
             pointer-events: none;
             font-size: 14px;
             text-transform: uppercase;
-            font-weight: 400;
             color: rgb(0, 0, 0);
             transition: opacity 320ms ease;
             line-height: 1;
@@ -290,7 +291,6 @@
         }
 
         .meta-label {
-            font-weight: 400;
             text-transform: uppercase;
         }
 
@@ -501,7 +501,6 @@
         }
 
         .mobile-overlay-message {
-            font-weight: 400;
             font-size: 24px;
             color: rgb(255, 255, 255);
             text-transform: uppercase;
