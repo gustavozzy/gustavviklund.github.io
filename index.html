@@ -1,15 +1,35 @@
 <!DOCTYPE html>
 <html>
 <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+    <title>Gustav Viklund</title>
     <style>
         @font-face {
             font-family: 'printf';
             src: url('resources/PRINTF Regular.ttf') format('truetype');
+            font-weight: 400;
+            font-style: normal;
+        }
+
+        :root {
+            --font-body: 'Helvetica', 'Helvetica Neue', Arial, sans-serif;
+            --font-caps: 'Helvetica Condensed', 'Helvetica Neue Condensed Bold', 'Arial Narrow', Arial, sans-serif;
+        }
+
+        :is(.back-button, .next-button, .scroll-prompt, .mobile-overlay-message, .loading-text, .meta-label, .custom-cursor-text) {
+            font-family: var(--font-caps);
+        }
+
+        h1, h2, h3, h4, h5, h6 {
+            font-weight: 400;
         }
         
         html {
+            font-synthesis: none;
             overflow: hidden;
             cursor: none;
+            background-color: #101010;
             scrollbar-width: none; /* Firefox */
             -ms-overflow-style: none; /* IE and Edge */
         }
@@ -23,7 +43,7 @@
         }
         
         body {
-            background-color: rgb(0, 0, 0);
+            background-color: #101010;
             margin: 0;
             padding: 0;
             height: 100vh;
@@ -42,32 +62,8 @@
             display: none; /* Chrome, Safari, Opera */
         }
         
-        /* Prevent vertical scrolling on mobile */
-        @media (max-width: 768px) {
-            html {
-                overflow: hidden;
-                height: 100%;
-                position: fixed;
-                width: 100%;
-            }
-            
-            body {
-                overflow-y: hidden !important;
-                overflow-x: auto;
-                height: 100vh;
-                height: -webkit-fill-available;
-                position: fixed;
-                width: 100%;
-                touch-action: pan-x;
-            }
-            
-            /* Prevent pull-to-refresh and overscroll on mobile */
-            body {
-                overscroll-behavior-y: none !important;
-                -webkit-overflow-scrolling: touch;
-            }
-        }
-        
+        /* Mobile layout CSS lives at the end of this stylesheet so it overrides desktop rules. */
+         
         /* Loading screen - ground starts expanded and shrinks down */
         .ground.loading {
             height: 100vh !important;
@@ -117,8 +113,8 @@
         .loading-text {
             margin-top: 20px;
             color: rgb(255, 255, 255);
-            font-family: 'Avenir', 'Avenir Next', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-            font-size: 14px;
+            font-size: 16px;
+            text-transform: uppercase;
             font-weight: 500;
             letter-spacing: 1px;
         }
@@ -129,7 +125,7 @@
             top: 0;
             left: 0;
             pointer-events: none;
-            z-index: 2000;
+            z-index: 3000;
             transform: translate3d(-100px, -100px, 0);
         }
         .custom-cursor .custom-cursor-shape {
@@ -150,9 +146,9 @@
             white-space: nowrap;
             opacity: 0;
             pointer-events: none;
-            font-family: 'Avenir', 'Avenir Next', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-            font-size: 12px;
-            font-weight: bold;
+            font-size: 14px;
+            text-transform: uppercase;
+            font-weight: 400;
             color: rgb(0, 0, 0);
             transition: opacity 320ms ease;
             line-height: 1;
@@ -174,6 +170,10 @@
         .custom-cursor.is-clicking .custom-cursor-shape {
             transform: translateY(-50%) scale(0.5);
             transition: transform 200ms cubic-bezier(0.4, 0, 0.2, 1), width 320ms ease, height 320ms ease, padding 320ms ease, background 320ms ease, border-radius 320ms ease;
+        }
+        .custom-cursor.is-hiding .custom-cursor-shape {
+            transform: translateY(-50%) scale(0);
+            transition: transform 250ms cubic-bezier(0.4, 0, 0.2, 1);
         }
 
         .background-image {
@@ -197,20 +197,10 @@
             object-fit: cover;
             z-index: 0;
             pointer-events: none;
-            transform: scaleX(-1);
         }
-        
-        .clouds-darken-overlay {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            background-color: rgb(0, 0, 0);
-            z-index: 0;
-            pointer-events: none;
-            opacity: 0;
-            transition: opacity 0.1s ease;
+
+        .mobile-clouds {
+            display: none;
         }
         
         /* Fallback background for browsers that don't support the video */
@@ -221,7 +211,7 @@
             left: 0;
             width: 100%;
             height: 100%;
-            background-color: rgb(0, 0, 0);
+            background-color: #101010;
             z-index: -1;
         }
         
@@ -240,7 +230,7 @@
             background-repeat: no-repeat;
             background-size: cover;
             background-position: center;
-            background-color: black;
+            background-color: #101010;
             z-index: 1999;
             transition: height 1.5s cubic-bezier(0.4, 0, 0.2, 1);
             will-change: height;
@@ -318,7 +308,7 @@
             top: 12%;
         }
 
-        #house-line-club {
+        #house-line-open-season {
             top: 43%;
         }
 
@@ -344,7 +334,7 @@
             transform-origin: bottom center;
             transform: scale(1);
         }
-        #club-building { 
+        #open-season-building { 
             left: 800px; 
             z-index: 1;
             transform-origin: bottom center;
@@ -373,7 +363,7 @@
             min-width: 150vw; /* Increased to ensure edges never show */
             height: 100vh;
             object-fit: cover;
-            z-index: 0;
+            z-index: 1;
             pointer-events: none;
         }
 
@@ -398,6 +388,127 @@
             user-select: none;
         }
 
+        .info-icon {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            height: 120px;
+            width: auto;
+            padding: 16px;
+            z-index: 1998;
+            pointer-events: auto;
+            user-select: none;
+            cursor: none;
+            transform-origin: center;
+            transition: transform 0.25s ease;
+        }
+
+        .info-icon:hover {
+            transform: scale(1.12) rotate(-10deg);
+        }
+
+        .info-icon:active {
+            transform: scale(0.9) rotate(-10deg);
+        }
+
+        .info-popup-overlay {
+            position: fixed;
+            inset: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background-color: rgba(16, 16, 16, 0.45);
+            z-index: 2005;
+            opacity: 0;
+            visibility: hidden;
+            pointer-events: none;
+            transition: opacity 0.3s ease, visibility 0.3s ease;
+        }
+
+        .info-popup-overlay.active {
+            opacity: 1;
+            visibility: visible;
+            pointer-events: auto;
+        }
+
+        .info-popup {
+            background-color: #101010;
+            color: #fff;
+            width: min(1080px, calc(100% - 12vw));
+            height: auto;
+            max-height: 78vh;
+            padding: 48px 56px;
+            box-sizing: border-box;
+            display: grid;
+            grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);
+            column-gap: 40px;
+            align-items: stretch;
+            font-family: var(--font-body);
+            font-size: 15px;
+            line-height: 1.5;
+            text-align: left;
+        }
+
+        .info-about {
+            max-width: 280px;
+            justify-self: start;
+            align-self: start;
+            margin-top: 12px;
+        }
+
+        .info-popup-photo {
+            height: min(52vh, 460px);
+            width: auto;
+            max-width: min(26vw, 300px);
+            object-fit: cover;
+            display: block;
+            align-self: center;
+            justify-self: center;
+            user-select: none;
+        }
+
+        .info-contact {
+            max-width: 280px;
+            justify-self: start;
+            align-self: center;
+            margin-top: 72px;
+        }
+
+        .info-popup-title {
+            font-family: 'Helvetica Neue Condensed Bold', 'HelveticaNeue-CondensedBold', var(--font-caps);
+            font-size: 22px;
+            font-weight: 700;
+            font-stretch: condensed;
+            text-transform: uppercase;
+            letter-spacing: 0.04em;
+            margin: 0 0 16px;
+        }
+
+        .info-popup-text {
+            margin: 0 0 1em;
+        }
+
+        .info-popup-text:last-child {
+            margin-bottom: 0;
+        }
+
+        .info-contact-line {
+            margin: 0 0 0.35em;
+        }
+
+        .info-contact-line:last-child {
+            margin-bottom: 0;
+        }
+
+        .info-popup a {
+            color: #fff;
+            text-decoration: none;
+        }
+
+        .info-popup a:hover {
+            text-decoration: underline;
+        }
+
         .click {
             position: absolute;
             height: 10%;  /* Adjust size as needed */
@@ -413,8 +524,8 @@
             position: absolute;
             height: 20%;  /* Adjust size as needed */
             width: auto;
-            bottom: 50%;  /* Adjust position as needed */
-            left: 190%;    /* Adjust position as needed */
+            bottom: 45%;  /* Adjust position as needed */
+            left: 175%;    /* Adjust position as needed */
             object-fit: contain;
             user-select: none;
             z-index: 100;
@@ -443,41 +554,19 @@
             filter: grayscale(100%);
         }
 
-        .butterfly {
+        .ozzy {
             position: absolute;
-            height: 12%;  /* Adjust size as needed */
+            bottom: 0;
+            left: 580px;
+            height: 48vh;
             width: auto;
-            bottom: 48.5%;  /* Adjust position as needed */
-            left: 57%;    /* Adjust position as needed */
             object-fit: contain;
             user-select: none;
-            z-index: 1;
-        }
-
-        .bio-text {
-            position: absolute;
-            left: 2700px;
-            top: 55%;
-            transform: translateY(-50%);
-            width: 700px;
-            color: rgb(255, 255, 255);
-            font-family: 'Avenir', 'Avenir Next', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-            font-size: 16px;
-            font-weight: 500;
-            line-height: 1.6;
-            z-index: 50;
             pointer-events: none;
-            user-select: none;
+            z-index: 2;
+            filter: grayscale(100%);
+            transform: translateX(200%);
         }
-
-        .bio-text p {
-            margin: 0 0 1.5em 0;
-        }
-
-        .bio-text p:last-child {
-            margin-bottom: 0;
-        }
-
 
         /* Mobile overlay */
         .mobile-overlay {
@@ -487,7 +576,7 @@
             left: 0;
             width: 100%;
             height: 100%;
-            background-color: rgb(0, 0, 0);
+            background-color: #101010;
             z-index: 99999;
             align-items: center;
             justify-content: center;
@@ -498,8 +587,7 @@
         }
 
         .mobile-overlay-message {
-            font-family: Arial, sans-serif;
-            font-weight: bold;
+            font-weight: 400;
             font-size: 24px;
             color: rgb(255, 255, 255);
             text-transform: uppercase;
@@ -509,7 +597,7 @@
 
         @media (max-width: 768px) {
             .mobile-overlay {
-                display: flex;
+                display: none !important;
             }
         }
 
@@ -520,8 +608,7 @@
             left: 50%;
             transform: translateX(-50%);
             color: rgb(255, 255, 255);
-            font-family: 'Avenir', 'Avenir Next', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-            font-size: 16px;
+            font-size: 18px;
             font-weight: 500;
             letter-spacing: 2px;
             text-transform: uppercase;
@@ -539,7 +626,7 @@
             transform: translateX(-50%);
             width: 400px;
             height: 400px;
-            background-color: rgb(0, 0, 0);
+            background-color: #101010;
             border-radius: 50%;
             filter: blur(50px);
             z-index: -1;
@@ -550,11 +637,378 @@
             opacity: 1;
         }
 
+        @media (max-width: 768px) {
+            html {
+                overflow: hidden;
+                height: 100%;
+                position: fixed;
+                width: 100%;
+            }
+
+            body {
+                overflow: hidden !important;
+                height: 100vh;
+                height: -webkit-fill-available;
+                position: fixed;
+                width: 100%;
+                touch-action: manipulation;
+                overscroll-behavior: none !important;
+            }
+
+            html,
+            * {
+                cursor: auto !important;
+            }
+
+            .custom-cursor,
+            .mobile-overlay,
+            .car,
+            .ozzy,
+            .click,
+            .birds,
+            .palmtree,
+            .sixten,
+            .scroll-prompt {
+                display: none !important;
+            }
+
+            .mobile-clouds {
+                display: none !important;
+            }
+
+            .background-video {
+                display: block;
+                z-index: 0;
+            }
+
+            .skyline {
+                display: block;
+                left: 0;
+                width: 100% !important;
+                min-width: 100%;
+                height: 100%;
+                transform: none !important;
+                z-index: 1;
+                object-fit: cover;
+                object-position: bottom center;
+            }
+
+            .scene-container {
+                width: 100% !important;
+                height: 100%;
+                overflow: hidden;
+                touch-action: none;
+            }
+
+            .title {
+                top: 10px;
+                left: 10px;
+                width: calc(100% - 20px);
+                z-index: 5;
+            }
+
+            .info-icon {
+                top: 8px;
+                right: 8px;
+                height: 90px;
+                padding: 8px;
+                z-index: 1998;
+            }
+
+            .info-popup {
+                display: flex;
+                flex-direction: column;
+                align-items: stretch;
+                justify-content: flex-start;
+                width: calc(100% - 32px);
+                height: auto;
+                max-height: 82vh;
+                overflow-y: auto;
+                padding: 28px 24px;
+                gap: 24px;
+            }
+
+            .info-about,
+            .info-contact {
+                max-width: none;
+                margin: 0;
+                align-self: stretch;
+            }
+
+            .info-popup-photo {
+                height: auto;
+                width: min(58vw, 220px);
+                max-width: none;
+                align-self: center;
+            }
+
+            .info-popup-title {
+                font-size: 18px;
+                margin-bottom: 12px;
+            }
+
+            #anni-building,
+            #lotta-building,
+            #open-season-building,
+            #myart-building {
+                left: 15vw !important;
+                right: auto;
+                bottom: 0;
+                height: 100%;
+                width: 70vw;
+                overflow: visible;
+                transform: translate3d(100vw, 0, 0);
+                pointer-events: none;
+                z-index: 10;
+                will-change: transform;
+                transition: transform 0.7s cubic-bezier(0.33, 0, 0.2, 1);
+            }
+
+            #anni-building.is-from-left,
+            #lotta-building.is-from-left,
+            #open-season-building.is-from-left,
+            #myart-building.is-from-left {
+                transform: translate3d(-100vw, 0, 0);
+            }
+
+            #anni-building.is-active,
+            #lotta-building.is-active,
+            #open-season-building.is-active,
+            #myart-building.is-active {
+                transform: translate3d(0, 0, 0);
+                pointer-events: auto;
+                z-index: 11;
+            }
+
+            #anni-building.is-leaving,
+            #lotta-building.is-leaving,
+            #open-season-building.is-leaving,
+            #myart-building.is-leaving {
+                transform: translate3d(-100vw, 0, 0);
+                pointer-events: none;
+                z-index: 10;
+            }
+
+            #anni-building.is-leaving-right,
+            #lotta-building.is-leaving-right,
+            #open-season-building.is-leaving-right,
+            #myart-building.is-leaving-right {
+                transform: translate3d(100vw, 0, 0);
+                pointer-events: none;
+                z-index: 10;
+            }
+
+            #anni-building.no-transition,
+            #lotta-building.no-transition,
+            #open-season-building.no-transition,
+            #myart-building.no-transition {
+                transition: none;
+            }
+
+            .house {
+                left: 0;
+                transform: none;
+                width: 100%;
+                height: auto;
+                max-width: 100%;
+                object-fit: contain;
+                object-position: bottom center;
+            }
+
+            .house-click-blocker {
+                pointer-events: none;
+            }
+        }
+
     </style>
     <script>
         
+        function isMobile() {
+            return window.innerWidth <= 768;
+        }
+
+        const MOBILE_BUILDING_IDS = ['open-season-building', 'anni-building', 'lotta-building', 'myart-building'];
+        const MOBILE_CAROUSEL_SLIDE_MS = 700;
+        const MOBILE_SWIPE_THRESHOLD = 50;
+        let mobileCarouselIndex = 0;
+        let mobileCarouselTimer = null;
+        let mobileCarouselResetTimers = [];
+        let mobileCarouselAnimating = false;
+        let mobileCarouselSlideToken = 0;
+        let suppressNextHouseClick = false;
+
+        function getMobileBuilding(id) {
+            return document.getElementById(id);
+        }
+
+        function isInfoPopupOpen() {
+            const overlay = document.querySelector('.info-popup-overlay');
+            return !!(overlay && overlay.classList.contains('active'));
+        }
+
+        function resetMobileBuildingPosition(building) {
+            if (!building) {
+                return;
+            }
+            building.classList.add('no-transition');
+            building.classList.remove('is-leaving', 'is-leaving-right', 'is-from-left', 'is-active');
+            building.style.transform = '';
+            void building.offsetWidth;
+            building.classList.remove('no-transition');
+        }
+
+        function applyMobileCarousel(instant) {
+            MOBILE_BUILDING_IDS.forEach(function(id, i) {
+                const building = getMobileBuilding(id);
+                if (!building) {
+                    return;
+                }
+                building.style.transform = '';
+                if (instant) {
+                    building.classList.add('no-transition');
+                }
+                building.classList.remove('is-leaving', 'is-leaving-right', 'is-from-left');
+                building.classList.toggle('is-active', i === mobileCarouselIndex);
+                if (instant) {
+                    void building.offsetWidth;
+                    building.classList.remove('no-transition');
+                }
+            });
+        }
+
+        function slideMobileCarousel(direction) {
+            if (!isMobile() || mobileCarouselAnimating || isInfoPopupOpen()) {
+                return;
+            }
+
+            const count = MOBILE_BUILDING_IDS.length;
+            const leavingIndex = mobileCarouselIndex;
+            const nextIndex = (leavingIndex + direction + count) % count;
+            if (nextIndex === leavingIndex) {
+                return;
+            }
+
+            const leaving = getMobileBuilding(MOBILE_BUILDING_IDS[leavingIndex]);
+            const entering = getMobileBuilding(MOBILE_BUILDING_IDS[nextIndex]);
+            const slideToken = ++mobileCarouselSlideToken;
+
+            mobileCarouselIndex = nextIndex;
+            mobileCarouselAnimating = true;
+
+            MOBILE_BUILDING_IDS.forEach(function(id, i) {
+                if (i !== leavingIndex && i !== nextIndex) {
+                    resetMobileBuildingPosition(getMobileBuilding(id));
+                }
+            });
+
+            if (leaving) {
+                leaving.style.transform = '';
+            }
+            if (entering) {
+                entering.style.transform = '';
+            }
+
+            if (direction < 0 && entering) {
+                entering.classList.add('no-transition', 'is-from-left');
+                entering.classList.remove('is-leaving', 'is-leaving-right', 'is-active');
+                void entering.offsetWidth;
+                entering.classList.remove('no-transition');
+                entering.classList.add('is-active');
+                entering.classList.remove('is-from-left');
+            } else if (entering) {
+                entering.classList.remove('is-from-left', 'is-leaving', 'is-leaving-right');
+                entering.classList.add('is-active');
+            }
+
+            if (leaving) {
+                leaving.classList.remove('is-active');
+                leaving.classList.add(direction < 0 ? 'is-leaving-right' : 'is-leaving');
+            }
+
+            mobileCarouselResetTimers.push(setTimeout(function() {
+                if (slideToken !== mobileCarouselSlideToken) {
+                    return;
+                }
+                resetMobileBuildingPosition(leaving);
+                MOBILE_BUILDING_IDS.forEach(function(id, i) {
+                    const building = getMobileBuilding(id);
+                    if (!building) {
+                        return;
+                    }
+                    building.style.transform = '';
+                    if (i === mobileCarouselIndex) {
+                        building.classList.remove('is-leaving', 'is-leaving-right', 'is-from-left');
+                        building.classList.add('is-active');
+                    } else if (building !== leaving) {
+                        resetMobileBuildingPosition(building);
+                    }
+                });
+                mobileCarouselAnimating = false;
+            }, MOBILE_CAROUSEL_SLIDE_MS));
+        }
+
+        function advanceMobileCarousel() {
+            slideMobileCarousel(1);
+        }
+
+        function stopMobileCarousel() {
+            mobileCarouselSlideToken += 1;
+            if (mobileCarouselTimer) {
+                clearInterval(mobileCarouselTimer);
+                mobileCarouselTimer = null;
+            }
+            if (mobileCarouselResetTimers.length) {
+                mobileCarouselResetTimers.forEach(clearTimeout);
+                mobileCarouselResetTimers = [];
+            }
+            mobileCarouselAnimating = false;
+        }
+
+        function restartMobileCarouselTimer() {
+            if (mobileCarouselTimer) {
+                clearInterval(mobileCarouselTimer);
+            }
+            mobileCarouselTimer = setInterval(advanceMobileCarousel, 5000);
+        }
+
+        function startMobileCarousel() {
+            if (mobileCarouselTimer) {
+                return;
+            }
+            applyMobileCarousel(true);
+            restartMobileCarouselTimer();
+        }
+
+        function syncMobileHomeMode() {
+            const overlay = document.querySelector('.mobile-overlay');
+            if (overlay) {
+                overlay.classList.remove('active');
+            }
+
+            if (isMobile()) {
+                document.body.classList.add('is-mobile-home');
+                document.querySelectorAll('.building-container').forEach(function(building) {
+                    building.style.transform = '';
+                });
+                startMobileCarousel();
+                const skyline = document.querySelector('.skyline');
+                if (skyline) {
+                    skyline.style.transform = 'none';
+                }
+            } else {
+                document.body.classList.remove('is-mobile-home');
+                stopMobileCarousel();
+                document.querySelectorAll('.building-container').forEach(function(building) {
+                    building.classList.remove('is-active', 'is-leaving', 'is-leaving-right', 'is-from-left', 'no-transition');
+                });
+            }
+        }
+
         // Function to update car and building positions based on horizontal scroll
         function updateScrollEffects() {
+            if (isMobile()) {
+                return;
+            }
             const scrolled = document.body.scrollLeft;
             const bodyScrollWidth = document.body.scrollWidth;
             const maxScroll = Math.max(bodyScrollWidth - window.innerWidth, 0);
@@ -575,12 +1029,15 @@
             const lottaBuilding = document.getElementById('lotta-building');
             const myartBuilding = document.getElementById('myart-building');
             const anniBuilding = document.getElementById('anni-building');
-            const clubBuilding = document.getElementById('club-building');
+            const openSeasonBuilding = document.getElementById('open-season-building');
             
             if (lottaBuilding) lottaBuilding.style.transform = `translateX(${scrolled * -0.3}px)`;
             if (myartBuilding) myartBuilding.style.transform = `translateX(${scrolled * 0}px)`;
             if (anniBuilding) anniBuilding.style.transform = `translateX(${scrolled * 0.1}px)`;
-            if (clubBuilding) clubBuilding.style.transform = `translateX(${scrolled * 0.2}px)`;
+            if (openSeasonBuilding) openSeasonBuilding.style.transform = `translateX(${scrolled * 0.2}px)`;
+
+            const ozzy = document.getElementById('ozzy');
+            if (ozzy) ozzy.style.transform = `translateX(calc(200% + ${scrolled * 0.1}px))`;
             
             // Parallax effect for skyline (moves slower than scroll for depth effect)
             const skyline = document.querySelector('.skyline');
@@ -600,32 +1057,6 @@
                 skyline.style.transform = `translateX(${clampedTransform}px)`;
             }
             
-            // Parallax effect for bio text (moves with palmtree - same as lotta-building)
-            const bioText = document.querySelector('.bio-text');
-            if (bioText) {
-                // Match palmtree movement - palmtree is in lotta-building which moves at -0.3
-                const parallaxMultiplier = -0.3;
-                const parallaxOffset = scrolled * parallaxMultiplier;
-                bioText.style.transform = `translateY(-50%) translateX(${parallaxOffset}px)`;
-            }
-            
-            // Darken clouds background after 800px scroll
-            const cloudsOverlay = document.querySelector('.clouds-darken-overlay');
-            if (cloudsOverlay) {
-                const darkenStart = 800;
-                if (scrolled > darkenStart) {
-                    // Calculate opacity: starts at 0 when scrolled = 1600px, increases as you scroll more
-                    // You can adjust the max opacity and the rate of darkening here
-                    const scrollBeyond = scrolled - darkenStart;
-                    const maxDarkness = 0.7; // Maximum opacity (0.7 = 70% dark)
-                    const darkenRange = 1000; // Distance over which it reaches max darkness (1000px)
-                    const opacity = Math.min(scrollBeyond / darkenRange, maxDarkness);
-                    cloudsOverlay.style.opacity = opacity;
-                } else {
-                    cloudsOverlay.style.opacity = 0;
-                }
-            }
-            
         }
         
         // Smooth scrolling implementation
@@ -638,7 +1069,7 @@
             
             // Easing function for smooth deceleration
             const diff = targetScrollLeft - currentScrollLeft;
-            const speed = 0.15; // Adjust this for scroll speed (0.1 = slower, 0.3 = faster)
+            const speed = 0.2; // Adjust this for scroll speed (0.1 = slower, 0.3 = faster)
             
             if (Math.abs(diff) < 0.5) {
                 // Close enough, snap to target
@@ -720,11 +1151,14 @@
         
         // Wheel event for horizontal scroll
         window.addEventListener('wheel', function(e) {
+            if (isMobile()) {
+                return;
+            }
             e.preventDefault();
             
             // Calculate scroll delta from both vertical and horizontal wheel movement
-            const verticalDelta = e.deltaY * 0.15; // Slower scrolling (15% of normal speed)
-            const horizontalDelta = e.deltaX * 0.15; // Same speed for horizontal scrolling
+            const verticalDelta = e.deltaY * 0.2; // Slower scrolling (20% of normal speed)
+            const horizontalDelta = e.deltaX * 0.2; // Same speed for horizontal scrolling
             const scrollDelta = verticalDelta + horizontalDelta; // Combine both directions
             
             const bodyScrollWidth = document.body.scrollWidth;
@@ -747,13 +1181,9 @@
             initializeSmoothScroll();
         }
         
-        // Prevent vertical scrolling on mobile - only allow horizontal
+        // Prevent vertical scrolling on mobile and swipe between houses
         let touchStartX = 0;
         let touchStartY = 0;
-        
-        function isMobile() {
-            return window.innerWidth <= 768;
-        }
         
         document.addEventListener('touchstart', function(e) {
             if (isMobile()) {
@@ -769,12 +1199,42 @@
                 const deltaX = Math.abs(touchX - touchStartX);
                 const deltaY = Math.abs(touchY - touchStartY);
                 
-                // If vertical movement is greater than horizontal, prevent it
                 if (deltaY > deltaX) {
                     e.preventDefault();
                 }
             }
         }, { passive: false });
+
+        document.addEventListener('touchend', function(e) {
+            if (!isMobile() || !e.changedTouches.length) {
+                return;
+            }
+
+            const deltaX = e.changedTouches[0].clientX - touchStartX;
+            const deltaY = e.changedTouches[0].clientY - touchStartY;
+
+            if (Math.abs(deltaX) < MOBILE_SWIPE_THRESHOLD || Math.abs(deltaX) <= Math.abs(deltaY)) {
+                return;
+            }
+
+            suppressNextHouseClick = true;
+            setTimeout(function() {
+                suppressNextHouseClick = false;
+            }, 400);
+            slideMobileCarousel(deltaX < 0 ? 1 : -1);
+            if (mobileCarouselTimer) {
+                restartMobileCarouselTimer();
+            }
+        }, { passive: true });
+
+        document.addEventListener('click', function(e) {
+            if (!suppressNextHouseClick) {
+                return;
+            }
+            suppressNextHouseClick = false;
+            e.preventDefault();
+            e.stopPropagation();
+        }, true);
 
         // Function to handle navigation with ground expansion
         function navigateWithTransition(url) {
@@ -894,8 +1354,11 @@
         window.addEventListener('pageshow', function(event) {
             // event.persisted is true when page is restored from bfcache
             if (event.persisted) {
-                // Reset and re-trigger the ground animation
                 initializeGroundAnimation();
+                syncMobileHomeMode();
+                if (isMobile()) {
+                    applyMobileCarousel(true);
+                }
             }
         });
         
@@ -903,36 +1366,16 @@
             const ground = document.querySelector('.ground');
             const body = document.body;
             const images = document.querySelectorAll('img');
-            const video = document.querySelector('.background-video');
             
             let imagesLoaded = 0;
-            let videoLoaded = false;
             let isLoadingComplete = false;
             const totalImages = images.length;
-            const totalAssets = totalImages + (video ? 1 : 0);
             
             // Check if all images are loaded
             function checkImageLoad() {
                 imagesLoaded++;
-                if (imagesLoaded === totalImages && videoLoaded) {
+                if (imagesLoaded === totalImages) {
                     hideLoadingScreen();
-                }
-            }
-            
-            // Check if video is loaded
-            function checkVideoLoad() {
-                if (video.readyState >= 3) { // HAVE_FUTURE_DATA or higher
-                    videoLoaded = true;
-                    if (imagesLoaded === totalImages) {
-                        hideLoadingScreen();
-                    }
-                } else {
-                    video.addEventListener('canplaythrough', function() {
-                        videoLoaded = true;
-                        if (imagesLoaded === totalImages) {
-                            hideLoadingScreen();
-                        }
-                    }, { once: true });
                 }
             }
             
@@ -953,9 +1396,14 @@
                 
                 body.classList.remove('loading');
                 body.classList.add('loaded');
+                const backgroundVideo = document.querySelector('.background-video');
+                if (backgroundVideo) {
+                    backgroundVideo.muted = true;
+                    backgroundVideo.play().catch(function() {});
+                }
                 
                 // Show scroll prompt after 3 seconds if user hasn't scrolled
-                if (!hasScrolled && scrollPrompt && scrollPrompt.parentNode) {
+                if (!isMobile() && !hasScrolled && scrollPrompt && scrollPrompt.parentNode) {
                     scrollPromptTimeout = setTimeout(showScrollPrompt, 3000);
                 }
                 
@@ -969,11 +1417,23 @@
                     }
                 }, 100);
                 
+                if (isMobile()) {
+                    applyMobileCarousel(true);
+                    sessionStorage.removeItem('cityScrollPosition');
+                    return;
+                }
+
                 // Restore scroll position if coming back from a project page
                 const savedScrollPosition = sessionStorage.getItem('cityScrollPosition');
                 if (savedScrollPosition !== null) {
                     // Wait a bit for the page to fully render before restoring scroll
                     setTimeout(() => {
+                        if (isMobile()) {
+                            applyMobileCarousel(true);
+                            sessionStorage.removeItem('cityScrollPosition');
+                            return;
+                        }
+
                         // Restore horizontal scroll
                         const scrollPos = parseInt(savedScrollPosition, 10);
                         document.body.scrollLeft = scrollPos;
@@ -993,13 +1453,13 @@
                         const lottaBuilding = document.getElementById('lotta-building');
                         const myartBuilding = document.getElementById('myart-building');
                         const anniBuilding = document.getElementById('anni-building');
-                        const clubBuilding = document.getElementById('club-building');
+                        const openSeasonBuilding = document.getElementById('open-season-building');
                         const car = document.getElementById('car');
                         
                         if (lottaBuilding) lottaBuilding.style.transform = `translateX(${scrolled * -0.3}px)`;
                         if (myartBuilding) myartBuilding.style.transform = `translateX(${scrolled * 0}px)`;
                         if (anniBuilding) anniBuilding.style.transform = `translateX(${scrolled * 0.1}px)`;
-                        if (clubBuilding) clubBuilding.style.transform = `translateX(${scrolled * 0.2}px)`;
+                        if (openSeasonBuilding) openSeasonBuilding.style.transform = `translateX(${scrolled * 0.2}px)`;
                         
                         // Update skyline parallax
                         const skyline = document.querySelector('.skyline');
@@ -1032,29 +1492,6 @@
                             }
                         }
                         
-                        // Update bio text parallax
-                        const bioText = document.querySelector('.bio-text');
-                        if (bioText) {
-                            const parallaxMultiplier = -0.3;
-                            const parallaxOffset = scrolled * parallaxMultiplier;
-                            bioText.style.transform = `translateY(-50%) translateX(${parallaxOffset}px)`;
-                        }
-                        
-                        // Update clouds darkening overlay
-                        const cloudsOverlay = document.querySelector('.clouds-darken-overlay');
-                        if (cloudsOverlay) {
-                            const darkenStart = 800;
-                            if (scrolled > darkenStart) {
-                                const scrollBeyond = scrolled - darkenStart;
-                                const maxDarkness = 0.7;
-                                const darkenRange = 1000;
-                                const opacity = Math.min(scrollBeyond / darkenRange, maxDarkness);
-                                cloudsOverlay.style.opacity = opacity;
-                            } else {
-                                cloudsOverlay.style.opacity = 0;
-                            }
-                        }
-                        
                         // Position house lines after layout is restored
                         positionHouseLines();
                         
@@ -1074,14 +1511,8 @@
                 }
             });
             
-            // Handle video loading
-            if (video) {
-                checkVideoLoad();
-            } else {
-                videoLoaded = true;
-                if (imagesLoaded === totalImages) {
-                    hideLoadingScreen();
-                }
+            if (totalImages === 0) {
+                hideLoadingScreen();
             }
             
             // Timeout fallback
@@ -1098,7 +1529,7 @@
             const lottaHouse = document.querySelector('#lotta-building .house');
             const myartHouse = document.querySelector('#myart-building .house');
             const anniHouse = document.querySelector('#anni-building .house');
-            const clubHouse = document.querySelector('#club-building .house');
+            const openSeasonHouse = document.querySelector('#open-season-building .house');
             
             if (lottaHouse) {
                 lottaHouse.addEventListener('click', function(e) {
@@ -1124,11 +1555,11 @@
                 });
             }
             
-            if (clubHouse) {
-                clubHouse.addEventListener('click', function(e) {
+            if (openSeasonHouse) {
+                openSeasonHouse.addEventListener('click', function(e) {
                     e.stopPropagation();
                     e.preventDefault();
-                    navigateWithTransition('club-classics.html');
+                    navigateWithTransition('open-season.html');
                 });
             }
 
@@ -1175,45 +1606,21 @@
                 setTimeout(triggerGlitch, 2000 + Math.random() * 3000);
             }
 
-            // Glitch effect for house 4
-            const house4Glitch = document.querySelector('#club-building .house-glitch');
-            if (house4Glitch) {
-                function triggerGlitch4() {
-                    // Random duration between 50-150ms for subtle glitch
-                    const duration1 = 50 + Math.random() * 100;
-                    const shouldDoubleGlitch = Math.random() > 0.333; // 66.67% chance of double glitch (twice as often as single)
-                    
-                    // First glitch
-                    house4Glitch.classList.add('active');
-                    setTimeout(() => {
-                        house4Glitch.classList.remove('active');
-                        
-                        // Sometimes do a second glitch after a short gap
-                        if (shouldDoubleGlitch) {
-                            const gap = 30 + Math.random() * 50; // Gap between glitches (30-80ms)
-                            const duration2 = 50 + Math.random() * 100;
-                            setTimeout(() => {
-                                house4Glitch.classList.add('active');
-                                setTimeout(() => {
-                                    house4Glitch.classList.remove('active');
-                                }, duration2);
-                            }, gap);
-                        }
-                    }, duration1);
-                    
-                    // Schedule next glitch - random interval between 3-10 seconds
-                    const nextGlitch = 3000 + Math.random() * 7000;
-                    setTimeout(triggerGlitch4, nextGlitch);
-                }
-                
-                // Start the glitch effect after initial delay (different timing from house 1)
-                setTimeout(triggerGlitch4, 3000 + Math.random() * 4000);
-            }
-
         });
 
         // Add click handlers for buildings, set logo, and wire up custom cursor - wait for DOM to load
         document.addEventListener('DOMContentLoaded', function() {
+            const backgroundVideo = document.querySelector('.background-video');
+            function playBackgroundVideo() {
+                if (!backgroundVideo) return;
+                backgroundVideo.muted = true;
+                backgroundVideo.play().catch(function() {});
+            }
+            playBackgroundVideo();
+            if (backgroundVideo) {
+                backgroundVideo.addEventListener('canplay', playBackgroundVideo);
+            }
+
             // Build the animated cursor element
             const cursor = document.createElement('div');
             cursor.className = 'custom-cursor';
@@ -1230,7 +1637,7 @@
                 'anni-building': 'ANNI SUSHI',
                 'lotta-building': 'LOTTA HASSELBLAD',
                 'myart-building': 'MY ART',
-                'club-building': 'CLUB CLASSICS'
+                'open-season-building': 'OPEN SEASON'
             };
 
             // Track the cursor position with a small easing for smoothness
@@ -1298,6 +1705,41 @@
                 });
             });
 
+            const infoIcon = document.querySelector('.info-icon');
+            const infoPopupOverlay = document.querySelector('.info-popup-overlay');
+
+            if (infoIcon && infoPopupOverlay) {
+                infoIcon.addEventListener('mouseenter', () => {
+                    cursor.classList.remove('is-hovering');
+                    cursor.classList.add('is-hiding');
+                });
+                infoIcon.addEventListener('mouseleave', () => {
+                    cursor.classList.remove('is-hiding');
+                });
+
+                infoIcon.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    infoPopupOverlay.classList.add('active');
+                });
+
+                infoPopupOverlay.addEventListener('click', () => {
+                    infoPopupOverlay.classList.remove('active');
+                });
+
+                const infoPopup = document.querySelector('.info-popup');
+                if (infoPopup) {
+                    infoPopup.addEventListener('click', (e) => {
+                        e.stopPropagation();
+                    });
+                }
+
+                document.addEventListener('keydown', (e) => {
+                    if (e.key === 'Escape') {
+                        infoPopupOverlay.classList.remove('active');
+                    }
+                });
+            }
+
             // Function to set logo based on screen size
             function setLogo() {
                 const titleImg = document.querySelector('.title');
@@ -1328,45 +1770,8 @@
             updateSkylineWidth();
             window.addEventListener('resize', updateSkylineWidth);
             
-            // Handle background video loading for Chrome compatibility
-            const backgroundVideo = document.querySelector('.background-video');
-            if (backgroundVideo) {
-                // Check if video can play - Chrome doesn't support .mov files
-                backgroundVideo.addEventListener('error', function() {
-                    // If video fails to load, hide it so background shows through
-                    backgroundVideo.style.display = 'none';
-                }, true);
-                
-                // Also check after a short delay if video hasn't started playing
-                setTimeout(function() {
-                    if (backgroundVideo.readyState === 0 || backgroundVideo.readyState === 1) {
-                        // Video hasn't loaded or can't play
-                        backgroundVideo.style.display = 'none';
-                    }
-                }, 2000);
-            }
-
-            // Mobile detection and overlay
-            function isMobileDevice() {
-                return /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent) || 
-                       (window.innerWidth <= 768 && 'ontouchstart' in window);
-            }
-
-            const mobileOverlay = document.querySelector('.mobile-overlay');
-            if (isMobileDevice()) {
-                mobileOverlay.classList.add('active');
-            } else {
-                mobileOverlay.classList.remove('active');
-            }
-
-            // Also check on resize
-            window.addEventListener('resize', () => {
-                if (isMobileDevice()) {
-                    mobileOverlay.classList.add('active');
-                } else {
-                    mobileOverlay.classList.remove('active');
-                }
-            });
+            syncMobileHomeMode();
+            window.addEventListener('resize', syncMobileHomeMode);
 
         });
     </script>
@@ -1379,12 +1784,29 @@
         <div class="loading-spinner"></div>
         <div class="loading-text">LOADING</div>
     </div>
-    <video class="background-video" autoplay loop muted playsinline webkit-playsinline preload="auto">
+    <video class="background-video" autoplay muted loop playsinline preload="auto">
         <source src="resources/clouds.mp4" type="video/mp4">
     </video>
-    <div class="clouds-darken-overlay"></div>
+    <img src="resources/clouds blue.png" class="mobile-clouds" alt="">
     <img src="resources/skyline.png" class="skyline" alt="Skyline">
     <img src="" class="title" alt="Title">
+    <img src="resources/info.png" class="info-icon" alt="Info">
+    <div class="info-popup-overlay">
+        <div class="info-popup">
+            <div class="info-about">
+                <h2 class="info-popup-title">About me</h2>
+                <p class="info-popup-text">Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.</p>
+                <p class="info-popup-text">Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</p>
+            </div>
+            <img src="resources/gv_image.png" class="info-popup-photo" alt="Gustav Viklund">
+            <div class="info-contact">
+                <h2 class="info-popup-title">Contact</h2>
+                <p class="info-contact-line">Email: <a href="mailto:gustavviklund@icloud.com">gustavviklund@icloud.com</a></p>
+                <p class="info-contact-line">LinkedIn:</p>
+                <p class="info-contact-line">Instagram: <a href="https://instagram.com/gustavviklunds" target="_blank" rel="noopener noreferrer">@gustavviklunds</a></p>
+            </div>
+        </div>
+    </div>
     <div class="background"></div>
     <div class="scene-container">
         <div id="anni-building" class="building-container">
@@ -1393,7 +1815,6 @@
             <div id="house-blocker-anni" class="house-click-blocker"></div>
             <img src="resources/click.gif" class="click" alt="Click">
             <img src="resources/birds.gif" class="birds" alt="Birds">
-            <img src="resources/butterfly.gif" class="butterfly" alt="Butterfly">
         </div>
         
         <div id="lotta-building" class="building-container">
@@ -1404,11 +1825,10 @@
             <img src="resources/palmtree.gif" class="palmtree" alt="Palm tree">
         </div>
         
-        <div id="club-building" class="building-container">
-            <img src="resources/house 4.png" class="house" alt="Club House">
-            <img src="resources/house 4 off.png" class="house house-glitch" alt="Club House Glitch">
-            <div id="house-line-club" class="house-line"></div>
-            <div id="house-blocker-club" class="house-click-blocker"></div>
+        <div id="open-season-building" class="building-container is-active">
+            <img src="resources/house 4.png" class="house" alt="Open Season House">
+            <div id="house-line-open-season" class="house-line"></div>
+            <div id="house-blocker-open-season" class="house-click-blocker"></div>
         </div>
         
         <div id="myart-building" class="building-container">
@@ -1418,14 +1838,7 @@
             <img src="resources/sixten.gif" class="sixten" alt="Sixten">
         </div>
         
-        <div class="bio-text">
-            <p>I'm a 21-year-old creative with a strong passion for graphic design and visual storytelling. Creativity has always been a big part of my life, from drawing and photography to music and filmmaking. I'm constantly curious to learn new things and grow in inspiring, idea-driven environments.</p>
-
-            <p>In 2024, I had the opportunity to intern at an advertising agency, where I gained hands-on experience across concept development, visual identity work, and art direction. I love shaping ideas into clear, compelling design systems and my goal is to build a career doing exactly that.</p>
-
-            <p>I'm currently studying in the Digital Creative program at Hyper Island in Stockholm, while also producing music and playing piano in my free time. Looking ahead, I want to work in a role where I can combine design and music by creating visual identities, album artwork, and campaign visuals for artists and releases.</p>
-        </div>
-        
+        <img src="resources/ozzy_sitting.png" class="ozzy" id="ozzy" alt="Ozzy">
         <img src="resources/car.png" class="car" id="car" alt="Car">
         <div class="ground loading"></div>
     </div>

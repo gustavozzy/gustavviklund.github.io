@@ -3,7 +3,7 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-    <title>Lotta Hasselblad</title>
+    <title>Open Season</title>
     <style>
         @font-face {
             font-family: 'printf';
@@ -355,6 +355,7 @@
             width: 100%;
             height: auto;
             display: block;
+            cursor: none;
         }
         
         .image-row {
@@ -370,6 +371,7 @@
             width: 100%;
             height: auto;
             display: block;
+            cursor: none;
         }
 
         /* Animation styles */
@@ -421,16 +423,12 @@
             transition-delay: 0.2s;
         }
 
-        .image-row {
+        .image-main:nth-of-type(2) {
             transition-delay: 0.3s;
         }
 
-        .image-row:nth-of-type(2) {
+        .image-main:nth-of-type(3) {
             transition-delay: 0.4s;
-        }
-
-        .image-row:nth-of-type(3) {
-            transition-delay: 0.5s;
         }
 
         /* Lightbox/Modal styles */
@@ -475,11 +473,6 @@
             width: auto;
             height: auto;
             display: block;
-        }
-
-        .image-main img,
-        .image-small img {
-            cursor: none;
         }
 
         /* Mobile overlay */
@@ -569,7 +562,7 @@
 
             .project-title {
                 grid-column: 1 / -1;
-                font-size: 13vw;
+                font-size: 20vw;
                 text-align: center;
                 text-transform: uppercase;
                 margin: 0 0 12px;
@@ -647,68 +640,37 @@
         <div class="project-layout">
             <section class="project-text">
                 <div class="project-text-main">
-                    <h1 class="project-title fade-in-up">Lotta Hasselblad</h1>
+                    <h1 class="project-title fade-in-up">Open Season</h1>
                     <div class="project-meta fade-in-up">
                         <div class="meta-content">
                             <div class="meta-row">
-                                <span class="meta-label">PROJECT TYPE</span>
-                                <span class="meta-value">Rebranding</span>
-                            </div>
-                            <div class="meta-row">
                                 <span class="meta-label">CLIENT</span>
-                                <span class="meta-value">Lotta Hasselblad</span>
+                                <span class="meta-value">Made up album concept</span>
                             </div>
                             <div class="meta-row meta-row-year">
                                 <span class="meta-label">YEAR</span>
-                                <span class="meta-value">2025</span>
-                            </div>
-                            <div class="meta-row">
-                                <span class="meta-label">MY ROLE</span>
-                                <span class="meta-value">Graphic Designer</span>
-                            </div>
-                            <div class="meta-row">
-                                <span class="meta-label">TEAM</span>
-                                <span class="meta-value">
-                                    Gustav Viklund<br>
-                                    Evelina Benislavska<br>
-                                    Johanna Nordlander<br>
-                                    Malwina Kleparska<br>
-                                    Ryan Sundin<br>
-                                    Ying Chen
-                                </span>
+                                <span class="meta-value">2026</span>
                             </div>
                         </div>
                     </div>
                     <span class="meta-label info-label fade-in-up">INFO</span>
-                    <p class="fade-in-up">My first ever real client project was the rebranding for Swedish silversmith Lotta Hasselblad. To portray Lotta's colorful personality and handmade jewelry, graffiti became the core element in this design.</p>
+                    <p class="fade-in-up">Placeholder text.</p>
                 </div>
 
                 <div class="project-meta fade-in-up">
-                    <a href="anni-sushi.html" class="next-button fade-in-up">Next project</a>
+                    <a href="lotta-hasselblad.html" class="next-button fade-in-up">Next project</a>
                 </div>
             </section>
 
             <section class="project-images">
                 <div class="image-main fade-in-up">
-                    <img src="resources/lottahasselblad5.png" alt="LOTTA HASSELBLAD project image 5">
+                    <img src="resources/openseason1.png" alt="OPEN SEASON project image 1">
                 </div>
-                <div class="image-row fade-in-up">
-                    <div class="image-small">
-                        <img src="resources/lottahasselblad2.png" alt="LOTTA HASSELBLAD project image 2">
-                    </div>
-                    <div class="image-small">
-                        <img src="resources/lottahasselblad3.png" alt="LOTTA HASSELBLAD project image 3">
-                    </div>
+                <div class="image-main fade-in-up">
+                    <img src="resources/openseason2.png" alt="OPEN SEASON project image 2">
                 </div>
-                <div class="image-row fade-in-up">
-                    <div class="image-small">
-                        <img src="resources/lottahasselblad1.png" alt="LOTTA HASSELBLAD project image 1">
-                    </div>
-                </div>
-                <div class="image-row fade-in-up">
-                    <div class="image-small">
-                        <img src="resources/lottahasselblad4.png" alt="LOTTA HASSELBLAD project image 4">
-                    </div>
+                <div class="image-main fade-in-up">
+                    <img src="resources/openseason3.png" alt="OPEN SEASON project image 3">
                 </div>
             </section>
         </div>
@@ -1077,8 +1039,7 @@
                     '.project-text-main p',
                     '.project-meta',
                     '.next-button',
-                    '.image-main',
-                    '.image-row'
+                    '.image-main'
                 ];
 
                 // Remove visible class and add fade-out class in reverse order
@@ -1123,7 +1084,7 @@
             const lightbox = document.getElementById('lightbox');
             const lightboxImage = document.getElementById('lightboxImage');
             const lightboxContent = document.querySelector('.lightbox-content');
-            const projectImages = document.querySelectorAll('.image-main img, .image-small img');
+            const projectImages = document.querySelectorAll('.image-main img');
 
             // Open lightbox when clicking on project images
             projectImages.forEach(img => {

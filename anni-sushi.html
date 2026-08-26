@@ -1,14 +1,39 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <link rel="stylesheet" href="https://use.typekit.net/bzf0ffx.css">
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+    <title>Anni Sushi</title>
     <style>
         @font-face {
             font-family: 'printf';
             src: url('resources/PRINTF Regular.ttf') format('truetype');
+            font-weight: 400;
+            font-style: normal;
+        }
+
+        @font-face {
+            font-family: 'arch-compressed';
+            src: url('resources/Arch-Compressed-Trial.otf') format('opentype');
+            font-weight: 400;
+            font-style: normal;
+        }
+
+        :root {
+            --font-body: 'Helvetica', 'Helvetica Neue', Arial, sans-serif;
+            --font-caps: 'Helvetica Condensed', 'Helvetica Neue Condensed Bold', 'Arial Narrow', Arial, sans-serif;
+        }
+
+        :is(.back-button, .next-button, .scroll-prompt, .mobile-overlay-message, .loading-text, .meta-label, .custom-cursor-text) {
+            font-family: var(--font-caps);
+        }
+
+        h1, h2, h3, h4, h5, h6 {
+            font-weight: 400;
         }
         
         html {
+            font-synthesis: none;
             overflow: hidden;
             height: 100%;
             cursor: none;
@@ -28,13 +53,13 @@
             background-repeat: no-repeat;
             background-size: cover;
             background-position: center;
-            background-color: rgb(0, 0, 0);
+            background-color: #101010;
             margin: 0;
             padding: 0;
             height: 100vh;
             overflow: hidden;
             cursor: none; /* Match city page cursor */
-            font-family: 'Avenir', 'Avenir Next', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            font-family: var(--font-body);
             scrollbar-width: none; /* Firefox */
             -ms-overflow-style: none; /* IE and Edge */
         }
@@ -84,9 +109,9 @@
             white-space: nowrap;
             opacity: 0;
             pointer-events: none;
-            font-family: 'Avenir', 'Avenir Next', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
-            font-size: 12px;
-            font-weight: bold;
+            font-size: 14px;
+            text-transform: uppercase;
+            font-weight: 400;
             color: rgb(0, 0, 0);
             transition: opacity 320ms ease;
             line-height: 1;
@@ -189,7 +214,7 @@
             display: inline-block;
             color: white;
             text-decoration: none;
-            font-size: 0.9rem;
+            font-size: 1rem;
             text-transform: uppercase;
             margin-bottom: 10px;
             cursor: none;
@@ -214,16 +239,17 @@
         }
         
         .project-title {
-            font-family: 'etna-x-condensed', serif;
+            font-family: 'arch-compressed', sans-serif;
             font-size: 6rem;
-            text-transform: uppercase;
+            font-weight: 400;
+            font-synthesis: none;
             margin: 0 0 24px 0;
             color: white;
             line-height: 1;
         }
 
         p {
-            font-size: 0.95rem;
+            font-size: 1.05rem;
             line-height: 1.6;
             margin: 0 0 16px 0;
             color: white;
@@ -231,7 +257,7 @@
 
         .project-meta {
             margin-top: 24px;
-            font-size: 0.9rem;
+            font-size: 1rem;
             display: flex;
             justify-content: space-between;
             align-items: flex-end;
@@ -259,20 +285,26 @@
             margin-top: 0;
         }
 
+        .info-label {
+            display: none;
+        }
+
         .meta-label {
             font-weight: 400;
+            text-transform: uppercase;
         }
 
         .meta-value {
-            font-weight: 600;
-            opacity: 0.9;
+            font-weight: 400;
+            font-size: 1.05rem;
+            line-height: 1.6;
         }
 
         .next-button {
             display: inline-block;
             color: white;
             text-decoration: none;
-            font-size: 0.9rem;
+            font-size: 1rem;
             text-transform: uppercase;
             cursor: none;
             align-self: flex-end;
@@ -417,7 +449,7 @@
             left: 0;
             width: 100%;
             height: 100%;
-            background-color: rgba(0, 0, 0, 0.95);
+            background-color: rgba(16, 16, 16, 0.95);
             z-index: 3000;
             align-items: center;
             justify-content: center;
@@ -466,7 +498,7 @@
             left: 0;
             width: 100%;
             height: 100%;
-            background-color: rgb(0, 0, 0);
+            background-color: #101010;
             z-index: 99999;
             align-items: center;
             justify-content: center;
@@ -477,8 +509,7 @@
         }
 
         .mobile-overlay-message {
-            font-family: Arial, sans-serif;
-            font-weight: bold;
+            font-weight: 400;
             font-size: 24px;
             color: rgb(255, 255, 255);
             text-transform: uppercase;
@@ -487,8 +518,127 @@
         }
 
         @media (max-width: 768px) {
-            .mobile-overlay {
+            html {
+                overflow: auto;
+                height: auto;
+            }
+
+            html,
+            * {
+                cursor: auto !important;
+            }
+
+            body {
+                height: auto;
+                min-height: 100vh;
+                overflow: auto;
+                cursor: auto;
+            }
+
+            .custom-cursor,
+            .mobile-overlay,
+            .project-logo {
+                display: none !important;
+            }
+
+            .back-button {
+                display: inline-block;
+                padding: 24px 22px 0;
+                margin-bottom: 0;
+            }
+
+            .project-page {
+                height: auto;
+                min-height: 100vh;
+                padding: 0;
+                overflow: visible;
+            }
+
+            .project-layout {
+                flex-direction: column;
+                gap: 0;
+                margin-top: 0;
+                height: auto;
+                min-height: 0;
+            }
+
+            .project-text {
+                display: contents;
+            }
+
+            .project-text-main {
+                display: grid;
+                grid-template-columns: max-content 1fr;
+                column-gap: 24px;
+                row-gap: 18px;
+                margin: 0;
+                padding: 28px 22px 40px;
+            }
+
+            .project-title {
+                grid-column: 1 / -1;
+                font-size: 20vw;
+                text-align: center;
+                text-transform: uppercase;
+                margin: 0 0 12px;
+            }
+
+            .project-text-main .project-meta,
+            .meta-content,
+            .meta-row {
+                display: contents;
+            }
+
+            .meta-label,
+            .info-label {
+                display: block;
+                grid-column: 1;
+                align-self: start;
+                line-height: 1.45;
+            }
+
+            .meta-value,
+            .project-text-main p {
+                grid-column: 2;
+                margin: 0;
+                font-size: 0.95rem;
+                line-height: 1.45;
+            }
+
+            .project-text > .project-meta {
+                order: 3;
                 display: flex;
+                justify-content: flex-end;
+                margin: 0;
+                padding: 28px 22px 48px;
+            }
+
+            .project-images {
+                order: 2;
+                flex: none;
+                overflow: visible;
+                height: auto;
+                gap: 0;
+                margin: 0;
+                padding: 0;
+            }
+
+            .image-main,
+            .image-row {
+                background: #ebebeb;
+                border-top: 2px solid #000;
+            }
+
+            .image-row {
+                flex-direction: row;
+                gap: 12px;
+            }
+
+            .image-main img,
+            .image-small img {
+                width: 100%;
+                height: auto;
+                display: block;
             }
         }
 
@@ -505,24 +655,25 @@
         <div class="project-layout">
             <section class="project-text">
                 <div class="project-text-main">
-                    <h1 class="project-title fade-in-up">ANNI SUSHI</h1>
+                    <h1 class="project-title fade-in-up">Anni Sushi</h1>
                     <div class="project-meta fade-in-up">
                         <div class="meta-content">
                             <div class="meta-row">
                                 <span class="meta-label">CLIENT</span>
                                 <span class="meta-value">Anni</span>
                             </div>
-                            <div class="meta-row">
+                            <div class="meta-row meta-row-year">
                                 <span class="meta-label">YEAR</span>
                                 <span class="meta-value">2025</span>
                             </div>
                         </div>
                     </div>
+                    <span class="meta-label info-label fade-in-up">INFO</span>
                     <p class="fade-in-up">When I visit my hometown Karlstad, my go-to sushi restaurant is Anni. Inspired by their tasteful food and colorful platings, I created this visual rebrand.</p>
                 </div>
 
                 <div class="project-meta fade-in-up">
-                    <a href="club-classics.html" class="next-button fade-in-up">Next project</a>
+                    <a href="open-season.html" class="next-button fade-in-up">Next project</a>
                 </div>
             </section>
 
@@ -1047,20 +1198,9 @@
             }
 
             const mobileOverlay = document.querySelector('.mobile-overlay');
-            if (isMobileDevice()) {
-                mobileOverlay.classList.add('active');
-            } else {
+            if (mobileOverlay) {
                 mobileOverlay.classList.remove('active');
             }
-
-            // Also check on resize
-            window.addEventListener('resize', () => {
-                if (isMobileDevice()) {
-                    mobileOverlay.classList.add('active');
-                } else {
-                    mobileOverlay.classList.remove('active');
-                }
-            });
         });
     </script>
 </body>
