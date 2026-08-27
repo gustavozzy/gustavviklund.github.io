@@ -760,10 +760,11 @@
                 align-items: stretch;
                 justify-content: flex-start;
                 width: calc(100% - 32px);
-                height: auto;
-                max-height: 82vh;
+                height: min(82vh, calc(100dvh - 24px - env(safe-area-inset-top) - env(safe-area-inset-bottom)));
+                max-height: min(82vh, calc(100dvh - 24px - env(safe-area-inset-top) - env(safe-area-inset-bottom)));
                 overflow: hidden;
                 padding: 40px 24px 28px;
+                touch-action: pan-y;
             }
 
             .info-popup-close {
@@ -777,7 +778,12 @@
                 flex-direction: column;
                 align-items: stretch;
                 justify-content: flex-start;
+                flex: 1 1 auto;
+                min-height: 0;
                 overflow-y: auto;
+                -webkit-overflow-scrolling: touch;
+                overscroll-behavior: contain;
+                touch-action: pan-y;
                 gap: 24px;
             }
 
@@ -1247,6 +1253,10 @@
         
         document.addEventListener('touchmove', function(e) {
             if (isMobile()) {
+                if (isInfoPopupOpen()) {
+                    return;
+                }
+
                 const touchX = e.touches[0].clientX;
                 const touchY = e.touches[0].clientY;
                 const deltaX = Math.abs(touchX - touchStartX);
@@ -1259,7 +1269,7 @@
         }, { passive: false });
 
         document.addEventListener('touchend', function(e) {
-            if (!isMobile() || !e.changedTouches.length) {
+            if (!isMobile() || !e.changedTouches.length || isInfoPopupOpen()) {
                 return;
             }
 
