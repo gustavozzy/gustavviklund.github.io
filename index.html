@@ -218,7 +218,8 @@
         .scene-container {
             position: relative;
             height: 100%;
-            width: calc(1650px + 48vh + 1000px); /* Content width + start padding + end padding */
+            width: calc(1650px + 48vh + 400px); /* Content width + start padding + end padding */
+            overflow: hidden;
         }
 
         .ground {
@@ -359,7 +360,7 @@
             position: fixed;
             bottom: 0;
             left: 0;
-            width: calc(1650px + 48vh + 1000px);
+            width: calc(1650px + 48vh + 400px);
             min-width: 150vw; /* Increased to ensure edges never show */
             height: 100vh;
             object-fit: cover;
@@ -483,6 +484,7 @@
 
         .info-popup-text {
             margin: 0 0 1em;
+            color: #ADADAD;
         }
 
         .info-popup-text:last-child {
@@ -491,6 +493,7 @@
 
         .info-contact-line {
             margin: 0 0 0.35em;
+            color: #ADADAD;
         }
 
         .info-contact-line:last-child {
@@ -498,7 +501,7 @@
         }
 
         .info-popup a {
-            color: #fff;
+            color: #ADADAD;
             text-decoration: none;
         }
 
@@ -536,6 +539,7 @@
             left: 240%;    /* Adjust position as needed */
             object-fit: contain;
             user-select: none;
+            pointer-events: none;
             z-index: 100;
         }
 
