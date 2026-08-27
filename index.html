@@ -204,7 +204,7 @@
             display: none;
         }
         
-        /* Fallback background for browsers that don't support the video */
+        /* Fallback background behind the scene */
         body::before {
             content: '';
             position: fixed;
@@ -1459,11 +1459,6 @@
                 
                 body.classList.remove('loading');
                 body.classList.add('loaded');
-                const backgroundVideo = document.querySelector('.background-video');
-                if (backgroundVideo) {
-                    backgroundVideo.muted = true;
-                    backgroundVideo.play().catch(function() {});
-                }
                 
                 // Show scroll prompt after 3 seconds if user hasn't scrolled
                 if (!isMobile() && !hasScrolled && scrollPrompt && scrollPrompt.parentNode) {
@@ -1673,17 +1668,6 @@
 
         // Add click handlers for buildings, set logo, and wire up custom cursor - wait for DOM to load
         document.addEventListener('DOMContentLoaded', function() {
-            const backgroundVideo = document.querySelector('.background-video');
-            function playBackgroundVideo() {
-                if (!backgroundVideo) return;
-                backgroundVideo.muted = true;
-                backgroundVideo.play().catch(function() {});
-            }
-            playBackgroundVideo();
-            if (backgroundVideo) {
-                backgroundVideo.addEventListener('canplay', playBackgroundVideo);
-            }
-
             // Build the animated cursor element
             const cursor = document.createElement('div');
             cursor.className = 'custom-cursor';
@@ -1855,9 +1839,7 @@
         <div class="loading-spinner"></div>
         <div class="loading-text">LOADING</div>
     </div>
-    <video class="background-video" autoplay muted loop playsinline preload="auto">
-        <source src="resources/clouds.mp4" type="video/mp4">
-    </video>
+    <img src="resources/sky_bg.png" class="background-video" alt="">
     <img src="resources/clouds blue.png" class="mobile-clouds" alt="">
     <img src="resources/skyline.png" class="skyline" alt="Skyline">
     <img src="" class="title" alt="Title">
