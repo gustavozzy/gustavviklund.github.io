@@ -17,7 +17,7 @@
             --font-caps: 'Helvetica Neue Condensed Bold', 'HelveticaNeue-CondensedBold', 'Arial Narrow', Arial, sans-serif;
         }
 
-        :is(.back-button, .next-button, .scroll-prompt, .mobile-overlay-message, .loading-text, .meta-label, .custom-cursor-text, .info-popup-title) {
+        :is(.back-button, .next-button, .scroll-prompt, .mobile-overlay-message, .loading-text, .meta-label, .custom-cursor-text, .info-popup-title, .info-popup-close) {
             font-family: var(--font-caps);
             font-weight: 700;
             font-stretch: condensed;
@@ -218,7 +218,7 @@
         .scene-container {
             position: relative;
             height: 100%;
-            width: calc(1650px + 48vh + 400px); /* Content width + start padding + end padding */
+            width: calc(1650px + 48vh + 550px); /* Content width + start padding + end padding */
             overflow: hidden;
         }
 
@@ -360,7 +360,7 @@
             position: fixed;
             bottom: 0;
             left: 0;
-            width: calc(1650px + 48vh + 400px);
+            width: calc(1650px + 48vh + 550px);
             min-width: 150vw; /* Increased to ensure edges never show */
             height: 100vh;
             object-fit: cover;
@@ -433,6 +433,7 @@
         }
 
         .info-popup {
+            position: relative;
             background-color: #101010;
             color: #fff;
             width: min(1080px, calc(100% - 12vw));
@@ -440,14 +441,52 @@
             max-height: 78vh;
             padding: 48px 56px;
             box-sizing: border-box;
-            display: grid;
-            grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);
-            column-gap: 40px;
-            align-items: stretch;
+            display: flex;
+            flex-direction: column;
+            overflow: hidden;
             font-family: var(--font-body);
             font-size: 15px;
             line-height: 1.5;
             text-align: left;
+        }
+
+        .info-popup-close {
+            position: absolute;
+            top: 16px;
+            right: 16px;
+            z-index: 2;
+            background: none;
+            border: none;
+            padding: 8px;
+            color: #fff;
+            font-size: 16px;
+            letter-spacing: 0.08em;
+            text-transform: uppercase;
+            line-height: 1;
+        }
+
+        .info-popup-close:hover {
+            opacity: 0.7;
+        }
+
+        .info-popup-body {
+            min-height: 0;
+            overflow-y: auto;
+            overscroll-behavior: contain;
+            display: grid;
+            grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);
+            column-gap: 40px;
+            align-items: stretch;
+            scrollbar-width: thin;
+            scrollbar-color: #5a5a5a transparent;
+        }
+
+        .info-popup-body::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        .info-popup-body::-webkit-scrollbar-thumb {
+            background-color: #5a5a5a;
         }
 
         .info-about {
@@ -722,8 +761,22 @@
                 width: calc(100% - 32px);
                 height: auto;
                 max-height: 82vh;
+                overflow: hidden;
+                padding: 40px 24px 28px;
+            }
+
+            .info-popup-close {
+                top: 8px;
+                right: 8px;
+                font-size: 14px;
+            }
+
+            .info-popup-body {
+                display: flex;
+                flex-direction: column;
+                align-items: stretch;
+                justify-content: flex-start;
                 overflow-y: auto;
-                padding: 28px 24px;
                 gap: 24px;
             }
 
@@ -1732,6 +1785,14 @@
                     });
                 }
 
+                const infoPopupClose = document.querySelector('.info-popup-close');
+                if (infoPopupClose) {
+                    infoPopupClose.addEventListener('click', (e) => {
+                        e.stopPropagation();
+                        infoPopupOverlay.classList.remove('active');
+                    });
+                }
+
                 document.addEventListener('keydown', (e) => {
                     if (e.key === 'Escape') {
                         infoPopupOverlay.classList.remove('active');
@@ -1792,6 +1853,8 @@
     <img src="resources/info.png" class="info-icon" alt="Info">
     <div class="info-popup-overlay">
         <div class="info-popup">
+            <button type="button" class="info-popup-close" aria-label="Close">Close</button>
+            <div class="info-popup-body">
             <div class="info-about">
                 <h2 class="info-popup-title">About me</h2>
                 <p class="info-popup-text">Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.</p>
@@ -1803,6 +1866,7 @@
                 <p class="info-contact-line">Email: <a href="mailto:gustavviklund@icloud.com">gustavviklund@icloud.com</a></p>
                 <p class="info-contact-line">LinkedIn:</p>
                 <p class="info-contact-line">Instagram: <a href="https://instagram.com/gustavviklunds" target="_blank" rel="noopener noreferrer">@gustavviklunds</a></p>
+            </div>
             </div>
         </div>
     </div>
