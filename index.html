@@ -1223,16 +1223,20 @@
                 scrollPrompt.classList.remove('visible');
             }
         }
+
+        function dismissMovePrompt() {
+            hasScrolled = true;
+            hideScrollPrompt();
+            if (scrollPromptTimeout) {
+                clearTimeout(scrollPromptTimeout);
+                scrollPromptTimeout = null;
+            }
+        }
         
         function checkScroll() {
             const currentScroll = document.body.scrollLeft || 0;
             if (currentScroll > 5) { // Use a small threshold to account for any initial scroll
-                hasScrolled = true;
-                hideScrollPrompt();
-                if (scrollPromptTimeout) {
-                    clearTimeout(scrollPromptTimeout);
-                    scrollPromptTimeout = null;
-                }
+                dismissMovePrompt();
             }
         }
         
@@ -1327,8 +1331,7 @@
             setTimeout(function() {
                 suppressNextHouseClick = false;
             }, 400);
-            hasScrolled = true;
-            hideScrollPrompt();
+            dismissMovePrompt();
             slideMobileCarousel(deltaX < 0 ? 1 : -1);
             if (mobileCarouselTimer) {
                 restartMobileCarouselTimer();
@@ -1336,6 +1339,9 @@
         }, { passive: true });
 
         document.addEventListener('click', function(e) {
+            if (isMobile()) {
+                dismissMovePrompt();
+            }
             if (!suppressNextHouseClick) {
                 return;
             }
@@ -1346,12 +1352,7 @@
 
         // Function to handle navigation with ground expansion
         function navigateWithTransition(url) {
-            hasScrolled = true;
-            hideScrollPrompt();
-            if (scrollPromptTimeout) {
-                clearTimeout(scrollPromptTimeout);
-                scrollPromptTimeout = null;
-            }
+            dismissMovePrompt();
 
             // Save current horizontal scroll position before navigating
             sessionStorage.setItem('cityScrollPosition', document.body.scrollLeft.toString());
@@ -1512,9 +1513,9 @@
                 body.classList.remove('loading');
                 body.classList.add('loaded');
                 
-                // Show move prompt after 3 seconds if the user hasn't scrolled or swiped
+                // Show move prompt if the user hasn't scrolled, swiped, or tapped
                 if (!hasScrolled && scrollPrompt && scrollPrompt.parentNode) {
-                    scrollPromptTimeout = setTimeout(showScrollPrompt, 3000);
+                    scrollPromptTimeout = setTimeout(showScrollPrompt, isMobile() ? 6000 : 3000);
                 }
                 
                 // Update skyline width after content loads
