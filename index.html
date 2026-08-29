@@ -267,13 +267,16 @@
 
         .house-glitch {
             opacity: 0;
-            transition: opacity 0.05s ease;
             pointer-events: none; /* Don't interfere with clicks */
             z-index: 101; /* Above the original house */
         }
 
         .house-glitch.active {
             opacity: 1;
+        }
+
+        .house.is-swapped {
+            opacity: 0;
         }
 
         .house-click-blocker {
@@ -541,7 +544,7 @@
         }
 
         .info-popup a {
-            color: #ADADAD;
+            color: #ffffff;
             text-decoration: none;
         }
 
@@ -651,10 +654,22 @@
             font-size: 18px;
             letter-spacing: 2px;
             text-transform: uppercase;
-            z-index: 2000;
+            z-index: 1997;
             opacity: 0;
             pointer-events: none;
             transition: opacity 0.5s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 14px;
+            white-space: nowrap;
+        }
+
+        .scroll-prompt-arrow {
+            display: none;
+            height: 18px;
+            width: auto;
+            flex-shrink: 0;
         }
 
         .scroll-prompt::before {
@@ -706,8 +721,7 @@
             .click,
             .birds,
             .palmtree,
-            .sixten,
-            .scroll-prompt {
+            .sixten {
                 display: none !important;
             }
 
@@ -876,6 +890,28 @@
 
             .house-click-blocker {
                 pointer-events: none;
+            }
+
+            .scroll-prompt {
+                top: auto;
+                bottom: 33.333vh;
+                transform: translateX(-50%);
+                font-size: 16px;
+                letter-spacing: 2px;
+            }
+
+            .scroll-prompt::before {
+                bottom: auto;
+                top: 50%;
+                transform: translate(-50%, -50%);
+                width: min(92vw, 520px);
+                height: 110px;
+                filter: blur(45px);
+                opacity: 0.8;
+            }
+
+            .scroll-prompt-arrow {
+                display: block;
             }
         }
 
@@ -1161,7 +1197,14 @@
             
             scrollPrompt = document.createElement('div');
             scrollPrompt.className = 'scroll-prompt';
-            scrollPrompt.textContent = 'SCROLL TO MOVE';
+            if (isMobile()) {
+                scrollPrompt.innerHTML =
+                    '<img src="resources/arrow_left.svg" class="scroll-prompt-arrow" alt="">' +
+                    '<span>SWIPE TO MOVE</span>' +
+                    '<img src="resources/arrow_right.svg" class="scroll-prompt-arrow" alt="">';
+            } else {
+                scrollPrompt.textContent = 'SCROLL TO MOVE';
+            }
             document.body.appendChild(scrollPrompt);
         }
         
@@ -1284,6 +1327,8 @@
             setTimeout(function() {
                 suppressNextHouseClick = false;
             }, 400);
+            hasScrolled = true;
+            hideScrollPrompt();
             slideMobileCarousel(deltaX < 0 ? 1 : -1);
             if (mobileCarouselTimer) {
                 restartMobileCarouselTimer();
@@ -1301,6 +1346,13 @@
 
         // Function to handle navigation with ground expansion
         function navigateWithTransition(url) {
+            hasScrolled = true;
+            hideScrollPrompt();
+            if (scrollPromptTimeout) {
+                clearTimeout(scrollPromptTimeout);
+                scrollPromptTimeout = null;
+            }
+
             // Save current horizontal scroll position before navigating
             sessionStorage.setItem('cityScrollPosition', document.body.scrollLeft.toString());
             
@@ -1460,8 +1512,8 @@
                 body.classList.remove('loading');
                 body.classList.add('loaded');
                 
-                // Show scroll prompt after 3 seconds if user hasn't scrolled
-                if (!isMobile() && !hasScrolled && scrollPrompt && scrollPrompt.parentNode) {
+                // Show move prompt after 3 seconds if the user hasn't scrolled or swiped
+                if (!hasScrolled && scrollPrompt && scrollPrompt.parentNode) {
                     scrollPromptTimeout = setTimeout(showScrollPrompt, 3000);
                 }
                 
@@ -1629,39 +1681,58 @@
             // Also position on window resize
             window.addEventListener('resize', positionHouseLines);
 
-            // Glitch effect for house 1
-            const houseGlitch = document.querySelector('#lotta-building .house-glitch');
-            if (houseGlitch) {
+            // On/off flicker for house 1 (overlay) and house 2 (src swap so Sixten stays put)
+            function setupHouseGlitch(setHouseOff) {
                 function triggerGlitch() {
                     // Random duration between 50-150ms for subtle glitch
                     const duration1 = 50 + Math.random() * 100;
                     const shouldDoubleGlitch = Math.random() > 0.333; // 66.67% chance of double glitch (twice as often as single)
-                    
+
                     // First glitch
-                    houseGlitch.classList.add('active');
+                    setHouseOff(true);
                     setTimeout(() => {
-                        houseGlitch.classList.remove('active');
-                        
+                        setHouseOff(false);
+
                         // Sometimes do a second glitch after a short gap
                         if (shouldDoubleGlitch) {
                             const gap = 30 + Math.random() * 50; // Gap between glitches (30-80ms)
                             const duration2 = 50 + Math.random() * 100;
                             setTimeout(() => {
-                                houseGlitch.classList.add('active');
+                                setHouseOff(true);
                                 setTimeout(() => {
-                                    houseGlitch.classList.remove('active');
+                                    setHouseOff(false);
                                 }, duration2);
                             }, gap);
                         }
                     }, duration1);
-                    
+
                     // Schedule next glitch - random interval between 3-10 seconds
                     const nextGlitch = 3000 + Math.random() * 7000;
                     setTimeout(triggerGlitch, nextGlitch);
                 }
-                
+
                 // Start the glitch effect after initial delay
                 setTimeout(triggerGlitch, 2000 + Math.random() * 3000);
+            }
+
+            const lottaOn = document.querySelector('#lotta-building .house:not(.house-glitch)');
+            const lottaOff = document.querySelector('#lotta-building .house-glitch');
+            if (lottaOn && lottaOff) {
+                setupHouseGlitch(function(isOff) {
+                    lottaOn.classList.toggle('is-swapped', isOff);
+                    lottaOff.classList.toggle('active', isOff);
+                });
+            }
+
+            if (myartHouse) {
+                const myartOnSrc = 'resources/house 2.png';
+                const myartOffSrc = 'resources/house 2 off.png';
+                const myartOffPreload = new Image();
+                myartOffPreload.src = myartOffSrc;
+
+                setupHouseGlitch(function(isOff) {
+                    myartHouse.src = isOff ? myartOffSrc : myartOnSrc;
+                });
             }
 
         });
@@ -1857,7 +1928,7 @@
             <div class="info-contact">
                 <h2 class="info-popup-title">Contact</h2>
                 <p class="info-contact-line">Email: <a href="mailto:gustavviklund@icloud.com">gustavviklund@icloud.com</a></p>
-                <p class="info-contact-line">LinkedIn:</p>
+                <p class="info-contact-line">LinkedIn: <a href="https://www.linkedin.com/in/gustav-viklund-a8b19620a/" target="_blank" rel="noopener noreferrer">Gustav Viklund</a></p>
                 <p class="info-contact-line">Instagram: <a href="https://instagram.com/gustavviklunds" target="_blank" rel="noopener noreferrer">@gustavviklunds</a></p>
             </div>
             </div>
