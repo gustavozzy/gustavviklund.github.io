@@ -4,7 +4,7 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
     <title>Gustav Viklund</title>
-    <link rel="icon" href="resources/gv_favicon.svg" type="image/svg+xml">
+    <link rel="icon" href="resources/logo%20gv.svg" type="image/svg+xml">
     <style>
         @font-face {
             font-family: 'printf';
@@ -1468,13 +1468,29 @@
         // Handle page restoration from back/forward cache (bfcache)
         // This ensures the ground animation plays when using browser back button
         window.addEventListener('pageshow', function(event) {
-            // event.persisted is true when page is restored from bfcache
-            if (event.persisted) {
+            const ground = document.querySelector('.ground');
+            const leftDuringTransition = ground && ground.classList.contains('expanding');
+            // event.persisted is true when page is restored from bfcache.
+            // Also recover if the city was frozen with a full-screen ground overlay.
+            if (event.persisted || leftDuringTransition) {
                 initializeGroundAnimation();
                 syncMobileHomeMode();
                 if (isMobile()) {
                     applyMobileCarousel(true);
                 }
+                // `load` does not fire again on bfcache restore, so hide the spinner here.
+                setTimeout(function() {
+                    const loadingIndicator = document.querySelector('.loading-indicator');
+                    if (loadingIndicator) {
+                        loadingIndicator.classList.add('hidden');
+                    }
+                    if (ground) {
+                        ground.classList.remove('loading');
+                        ground.classList.remove('expanding');
+                    }
+                    document.body.classList.remove('loading');
+                    document.body.classList.add('loaded');
+                }, 800);
             }
         });
         
@@ -1922,8 +1938,7 @@
             <div class="info-popup-body">
             <div class="info-about">
                 <h2 class="info-popup-title">About me</h2>
-                <p class="info-popup-text">Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.</p>
-                <p class="info-popup-text">Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</p>
+                <p class="info-popup-text">Swedish designer, illustrator and art director within music and culture. I create bold and memorable identities that blend branding with art, letting each project live in its own distinct world.</p>
             </div>
             <img src="resources/gv_image.png" class="info-popup-photo" alt="Gustav Viklund">
             <div class="info-contact">

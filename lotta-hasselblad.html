@@ -4,7 +4,7 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
     <title>Lotta Hasselblad</title>
-    <link rel="icon" href="resources/gv_favicon.svg" type="image/svg+xml">
+    <link rel="icon" href="resources/logo%20gv.svg" type="image/svg+xml">
     <style>
         @font-face {
             font-family: 'printf';
@@ -1055,9 +1055,10 @@
 
                 nextButton.addEventListener('click', (e) => {
                     e.preventDefault();
+                    sessionStorage.setItem('projectChromeStay', '1');
                     reverseAnimation(() => {
                         window.location.href = nextButton.getAttribute('href');
-                    });
+                    }, true);
                 });
             }
             
@@ -1073,20 +1074,46 @@
                 });
             });
 
+            const restoreAnimatedContent = () => {
+                document.querySelectorAll('.fade-in-up').forEach(el => {
+                    el.style.transition = 'none';
+                    el.classList.remove('fade-out');
+                    el.classList.add('visible');
+                    el.offsetHeight;
+                    el.style.transition = '';
+                });
+            };
+
+            window.addEventListener('pageshow', (event) => {
+                if (event.persisted || document.querySelector('.fade-in-up.fade-out')) {
+                    restoreAnimatedContent();
+                }
+            });
+
             // Reveal animation
             const animateElements = () => {
-                // Elements already have fade-in-up class in HTML, just add visible class
+                const keepChrome = sessionStorage.getItem('projectChromeStay') === '1';
+                if (keepChrome) {
+                    sessionStorage.removeItem('projectChromeStay');
+                }
                 const allElements = document.querySelectorAll('.fade-in-up');
                 allElements.forEach(el => {
-                    el.classList.add('visible');
+                    const persist = keepChrome && el.matches('.project-logo, .back-button');
+                    if (persist) {
+                        el.style.transition = 'none';
+                        el.classList.add('visible');
+                        el.offsetHeight;
+                        el.style.transition = '';
+                    } else {
+                        el.classList.add('visible');
+                    }
                 });
             };
 
             // Reverse animation for closing
-            const reverseAnimation = (callback) => {
+            const reverseAnimation = (callback, persistChrome = false) => {
                 const elementsToAnimate = [
-                    '.project-logo',
-                    '.back-button',
+                    ...(persistChrome ? [] : ['.project-logo', '.back-button']),
                     '.project-title',
                     '.project-text-main p',
                     '.info-label',

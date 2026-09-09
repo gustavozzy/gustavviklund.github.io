@@ -4,7 +4,7 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
     <title>My Art</title>
-    <link rel="icon" href="resources/gv_favicon.svg" type="image/svg+xml">
+    <link rel="icon" href="resources/logo%20gv.svg" type="image/svg+xml">
     <style>
         @font-face {
             font-family: 'printf';
@@ -855,6 +855,22 @@
                 item.addEventListener('mouseleave', () => {
                     cursor.classList.remove('is-hovering');
                 });
+            });
+
+            const restoreAnimatedContent = () => {
+                document.querySelectorAll('.fade-in-up').forEach(el => {
+                    el.style.transition = 'none';
+                    el.classList.remove('fade-out');
+                    el.classList.add('visible');
+                    el.offsetHeight;
+                    el.style.transition = '';
+                });
+            };
+
+            window.addEventListener('pageshow', (event) => {
+                if (event.persisted || document.querySelector('.fade-in-up.fade-out')) {
+                    restoreAnimatedContent();
+                }
             });
 
             // Reveal animation
