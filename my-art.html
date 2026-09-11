@@ -562,20 +562,34 @@
 
             .gallery-grid {
                 display: grid;
-                grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+                grid-template-columns: 1fr 1fr;
                 gap: 0;
+                align-items: start;
                 padding-bottom: 0;
             }
 
             .gallery-item {
-                background: #ebebeb;
+                background: transparent;
                 border-top: 2px solid #000;
+                line-height: 0;
+                overflow: hidden;
+            }
+
+            .gallery-item:nth-child(even) {
+                border-left: 2px solid #000;
+            }
+
+            .gallery-item img {
+                display: block;
+                vertical-align: top;
             }
 
             .gallery-item-label {
                 display: flex;
                 background: #101010;
                 padding: 10px 22px 20px;
+                line-height: 1.2;
+                font-size: 0.85rem;
             }
         }
 
